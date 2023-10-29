@@ -1,0 +1,12 @@
+
+
+AFFICHER "[ list head_{level} | @ - ] --" avec level l'indice de la liste
+
+SI la liste n'a pas de cellule ALORS 
+    1. afficher CHAR_CELLxomega "-" avec omega le nombre de colonne maximales
+    2. afficher "> NULL"
+SINON : 
+    Pour I allant de 0 à omega:
+        SI l'indice de colonne de la cellule n'est pas i, ALORS afficher CHAR_CELL * "-"
+        SINON SI c'est la dernière cellule de la liste ET que l'indice de la dernière colonne est omega ALORS afficher "> NULL"
+        SINON afficher "> [ {value} {indiceColonne} | @ - ]" avec value la valeur de la cellule et indiceColonne l'indice de la colonne de la cellule
