@@ -194,6 +194,10 @@ void printAllLevels(LevelList* list) {
 }
 
 int main() {
+    
+
+    /* PARTIE I */
+
     LevelList* myList = createLevelList(5);
 
     Cell* cell1 = createCell(10, 3);
@@ -208,7 +212,13 @@ int main() {
 
     assignColumnIndices(myList);
 
+
     printAllLevels(myList);
+
+
+    /* PARTIE II*/
+
+
 
     return 0;
 }
