@@ -260,6 +260,34 @@ void compareSearchTimes(LevelList* list, int value) {
 }
 
 
+/* ------------------------------------------------------- */
+/* ----------------GENERATION ALEATOIRE ------------------ */
+/* ------------------------------------------------------- */
+
+
+
+LevelList* createRandomLevelList(int numLevels) {
+    LevelList* newList = createLevelList(numLevels);
+    return newList;
+}
+
+// Fonction pour remplir le tableau avec n valeurs aléatoires
+void fillTableWithRandomValues(LevelList* list, int n) {
+    printf("Remplissage du tableau avec %d valeurs aléatoires :\n", n);
+
+    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
+
+    // Remplissage du tableau avec n valeurs aléatoires
+    for (int i = 0; i < n; i++) {
+        int value = rand() % n;  // Valeur aléatoire entre 0 et 99
+        int levels = rand() % list->maxLevels + 1;  // Niveau aléatoire entre 1 et maxLevels
+
+        Cell* newCell = createCell(value, levels);
+        insertAtHead(list, newCell);
+    }
+}
+
+
 
 /* ------------------------------------------------------- */
 /* ------------------------  MAIN ------------------------ */
@@ -267,15 +295,15 @@ void compareSearchTimes(LevelList* list, int value) {
 
 
 
-
-
 int main() {
+
+
     int option;
     
-    printf("Voulez-vous utiliser le schema par defaut ? (1 pour oui, 0 pour non) : ");
+    printf("Voulez-vous utiliser le schema par defaut (0), le schema manuel (1) ou l'utilisation d'une liste de n valeurs (2) ? (0, 1 ou 2) : ");
     scanf("%d", &option);
 
-    if (option == 1) {
+    if (option == 0) {
         // Utiliser le schéma par défaut
         LevelList* myList = createLevelList(4);
 
@@ -298,7 +326,7 @@ int main() {
         compareSearchTimes(myList, searchValue);
 
         free(myList);  // Libérer la mémoire allouée à la fin de la fonction
-    } else if (option == 0) {
+    } else if (option == 1) {
         // Saisir les valeurs depuis l'utilisateur
         int numLevels;
 
@@ -346,6 +374,38 @@ int main() {
         compareSearchTimes(myList, searchValue);
 
         free(myList);
+    } else if (option == 2) {
+        int numLevels;
+
+        printf("Combien de niveaux souhaitez-vous créer ? ");
+        scanf("%d", &numLevels);
+
+        if (numLevels <= 0) {
+            printf("Nombre de niveaux invalide.\n");
+            return 1;
+        }
+
+        LevelList* randomList = createRandomLevelList(numLevels);
+
+        int numRandomValues;
+        printf("Combien de valeurs aléatoires souhaitez-vous ajouter ? ");
+        scanf("%d", &numRandomValues);
+
+        if (numRandomValues <= 0) {
+            printf("Nombre de valeurs aléatoires invalide.\n");
+            free(randomList);
+            return 1;
+        }
+
+        fillTableWithRandomValues(randomList, numRandomValues);
+
+        assignColumnIndices(randomList);
+        printAllLevels(randomList);
+
+        int searchValue = 10;  // Modifier la valeur à rechercher
+        compareSearchTimes(randomList, searchValue);
+
+        free(randomList);
     } else {
         printf("Option invalide.\n");
         return 1;

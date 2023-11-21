@@ -28,6 +28,13 @@ int maxColumns(LevelList* list);
 void assignColumnIndices(LevelList* list);
 void printLevel(LevelList* list, int level);
 void printAllLevels(LevelList* list);
+
+// Generation aleatoire
+LevelList* createRandomLevelList(int numLevels);
+void fillTableWithRandomValues(LevelList* list, int n);
+
+
+// Recherche 
 SearchResult searchAllLevels(LevelList* list, int value); // Correction ici
 void compareSearchTimes(LevelList* list, int value);
 

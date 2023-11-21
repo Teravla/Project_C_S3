@@ -1,1 +1,1 @@
-int searchAllLevels(LevelList* list, int value)
+void fillTableWithRandomValues(LevelList* list, int n)
