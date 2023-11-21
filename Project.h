@@ -19,7 +19,9 @@ void insertAtHead(LevelList* list, Cell* newCell);
 int maxColumns(LevelList* list);
 void assignColumnIndices(LevelList* list);
 void printLevel(LevelList* list, int level);
-void printLevelSimplified(LevelList* list, int level);
 void printAllLevels(LevelList* list);
+
+Cell* searchAllLevels(LevelList* list, int value);
+void compareSearchTimes(LevelList* list, int value);
 
 #endif

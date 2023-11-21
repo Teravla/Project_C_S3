@@ -1,8 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "Project.h"
 
 #define CHAR_CELL 21
+
+
+
+/* ------------------------------------------------------- */
+/* ----------------- CREATION DU TABLEAU ----------------- */
+/* ------------------------------------------------------- */
+
+
 
 Cell* createCell(int value, int levels) {
     Cell* newCell = (Cell*)malloc(sizeof(Cell));
@@ -176,14 +185,6 @@ void printLevel(LevelList* list, int level) {
         current = current->next[level];
     }
 
-    /*for (int i = lastPrinted + 1; i < maxCols; i++) {
-        if (!printedColumns[i]) {
-            for (int j = 0; j < CHAR_CELL; j++) {
-                printf("-");
-            }
-        }
-    }*/
-
     free(printedColumns);
 }
 
@@ -192,6 +193,73 @@ void printAllLevels(LevelList* list) {
         printLevel(list, i);
     }
 }
+
+
+
+/* ------------------------------------------------------- */
+/* ---------------  FONCTIONS DE RECHERCHE --------------- */
+/* ------------------------------------------------------- */
+
+
+
+// Fonction pour rechercher une valeur dans la liste en utilisant tous les niveaux
+Cell* searchAllLevels(LevelList* list, int value) {
+    for (int i = list->maxLevels - 1; i >= 0; i--) {
+        Cell* current = list->head->next[i];
+        while (current != NULL) {
+            if (current->value == value) {
+                return current;
+            } else if (current->value < value) {
+                break;  // Passer au niveau inférieur si la valeur actuelle est inférieure à la recherche
+            }
+            current = current->next[i];
+        }
+    }
+    return NULL;  // La valeur n'a pas été trouvée dans la liste
+}
+
+// Fonction pour comparer les temps de recherche entre le niveau 0 et tous les niveaux
+void compareSearchTimes(LevelList* list, int value) {
+    clock_t start, end;
+
+    // Recherche en utilisant uniquement le niveau 0
+    start = clock();
+    Cell* resultLevel0 = list->head->next[0];
+    while (resultLevel0 != NULL && resultLevel0->value != value) {
+        resultLevel0 = resultLevel0->next[0];
+    }
+    end = clock();
+    double timeLevel0 = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+    // Recherche en utilisant tous les niveaux
+    start = clock();
+    Cell* resultAllLevels = searchAllLevels(list, value);
+    end = clock();
+    double timeAllLevels = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+    // Affichage des résultats
+    if (resultLevel0 != NULL) {
+        printf("Level 0 Search: Found value %d\n", resultLevel0->value);
+    } else {
+        printf("Level 0 Search: Value not found\n");
+    }
+    printf("Time using Level 0: %f seconds\n", timeLevel0);
+
+    if (resultAllLevels != NULL) {
+        printf("All Levels Search: Found value %d\n", resultAllLevels->value);
+    } else {
+        printf("All Levels Search: Value not found\n");
+    }
+    printf("Time using All Levels: %f seconds\n", timeAllLevels);
+}
+
+
+
+/* ------------------------------------------------------- */
+/* ------------------------  MAIN ------------------------ */
+/* ------------------------------------------------------- */
+
+
 
 int main() {
     
@@ -215,10 +283,11 @@ int main() {
 
     printAllLevels(myList);
 
+    int searchValue = 10;  // Modifier la valeur à rechercher
+    compareSearchTimes(myList, searchValue);
 
-    /* PARTIE II*/
+    free(myList);  // Libérer la mémoire allouée à la fin de la fonction
 
 
-
-    return 0;
+    return 0;  // Retourne 0 pour indiquer une exécution sans erreur
 }
