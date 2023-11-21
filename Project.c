@@ -201,21 +201,27 @@ void printAllLevels(LevelList* list) {
 /* ------------------------------------------------------- */
 
 
-
 // Fonction pour rechercher une valeur dans la liste en utilisant tous les niveaux
-Cell* searchAllLevels(LevelList* list, int value) {
+SearchResult searchAllLevels(LevelList* list, int value) {
+    SearchResult result = {NULL, -1, -1};  // Initialisation des valeurs par défaut
+
     for (int i = list->maxLevels - 1; i >= 0; i--) {
         Cell* current = list->head->next[i];
         while (current != NULL) {
             if (current->value == value) {
-                return current;
+                // Stocker les résultats et la hauteur
+                result.cell = current;
+                result.columnIndex = current->column;
+                result.height = i + 1;  // Hauteur est indexée à partir de 1
+                return result;
             } else if (current->value < value) {
                 break;  // Passer au niveau inférieur si la valeur actuelle est inférieure à la recherche
             }
             current = current->next[i];
         }
     }
-    return NULL;  // La valeur n'a pas été trouvée dans la liste
+
+    return result;  // La valeur n'a pas été trouvée dans la liste
 }
 
 // Fonction pour comparer les temps de recherche entre le niveau 0 et tous les niveaux
@@ -233,20 +239,20 @@ void compareSearchTimes(LevelList* list, int value) {
 
     // Recherche en utilisant tous les niveaux
     start = clock();
-    Cell* resultAllLevels = searchAllLevels(list, value);
+    SearchResult resultAllLevels = searchAllLevels(list, value);
     end = clock();
     double timeAllLevels = ((double) (end - start)) / CLOCKS_PER_SEC;
 
     // Affichage des résultats
     if (resultLevel0 != NULL) {
-        printf("Level 0 Search: Found value %d\n", resultLevel0->value);
+        printf("Level 0 Search: Found value %d at column index %d\n", resultLevel0->value, resultLevel0->column);
     } else {
         printf("Level 0 Search: Value not found\n");
     }
     printf("Time using Level 0: %f seconds\n", timeLevel0);
 
-    if (resultAllLevels != NULL) {
-        printf("All Levels Search: Found value %d\n", resultAllLevels->value);
+    if (resultAllLevels.cell != NULL) {
+        printf("All Levels Search: Found value %d at column index %d, height %d\n", resultAllLevels.cell->value, resultAllLevels.columnIndex, resultAllLevels.height);
     } else {
         printf("All Levels Search: Value not found\n");
     }
@@ -261,33 +267,89 @@ void compareSearchTimes(LevelList* list, int value) {
 
 
 
+
+
 int main() {
+    int option;
     
+    printf("Voulez-vous utiliser le schema par defaut ? (1 pour oui, 0 pour non) : ");
+    scanf("%d", &option);
 
-    /* PARTIE I */
+    if (option == 1) {
+        // Utiliser le schéma par défaut
+        LevelList* myList = createLevelList(4);
 
-    LevelList* myList = createLevelList(5);
+        Cell* cell1 = createCell(10, 3);
+        Cell* cell2 = createCell(20, 3);
+        Cell* cell3 = createCell(30, 2);
+        Cell* cell4 = createCell(15, 4);
+        Cell* cell5 = createCell(16, 3);
 
-    Cell* cell1 = createCell(10, 3);
-    Cell* cell2 = createCell(20, 3);
-    Cell* cell3 = createCell(30, 2);
-    Cell* cell4 = createCell(15, 4);
+        insertAtHead(myList, cell1);
+        insertAtHead(myList, cell2);
+        insertAtHead(myList, cell3);
+        insertAtHead(myList, cell4);
+        insertAtHead(myList, cell5);
 
-    insertAtHead(myList, cell1);
-    insertAtHead(myList, cell2);
-    insertAtHead(myList, cell3);
-    insertAtHead(myList, cell4);
+        assignColumnIndices(myList);
+        printAllLevels(myList);
 
-    assignColumnIndices(myList);
+        int searchValue = 10;  // Modifier la valeur à rechercher
+        compareSearchTimes(myList, searchValue);
 
+        free(myList);  // Libérer la mémoire allouée à la fin de la fonction
+    } else if (option == 0) {
+        // Saisir les valeurs depuis l'utilisateur
+        int numLevels;
 
-    printAllLevels(myList);
+        printf("Combien de niveaux souhaitez-vous creer ? ");
+        scanf("%d", &numLevels);
 
-    int searchValue = 10;  // Modifier la valeur à rechercher
-    compareSearchTimes(myList, searchValue);
+        if (numLevels <= 0) {
+            printf("Nombre de niveaux invalide.\n");
+            return 1;
+        }
 
-    free(myList);  // Libérer la mémoire allouée à la fin de la fonction
+        LevelList* myList = createLevelList(numLevels);
 
+        int numCells;
 
-    return 0;  // Retourne 0 pour indiquer une exécution sans erreur
+        printf("Combien de cellules souhaitez-vous creer ? ");
+        scanf("%d", &numCells);
+
+        if (numCells <= 0) {
+            printf("Nombre de cellules invalide.\n");
+            free(myList);
+            return 1;
+        }
+
+        for (int i = 0; i < numCells; i++) {
+            int value, levels;
+
+            printf("Valeur et niveau de la cellule %d (separes par un espace) : ", i + 1);
+            scanf("%d %d", &value, &levels);
+
+            if (levels <= 0 || levels > numLevels) {
+                printf("Niveau invalide pour la cellule %d.\n", i + 1);
+                free(myList);
+                return 1;
+            }
+
+            Cell* newCell = createCell(value, levels);
+            insertAtHead(myList, newCell);
+        }
+
+        assignColumnIndices(myList);
+        printAllLevels(myList);
+
+        int searchValue = 10;  // Modifier la valeur à rechercher
+        compareSearchTimes(myList, searchValue);
+
+        free(myList);
+    } else {
+        printf("Option invalide.\n");
+        return 1;
+    }
+
+    return 0;
 }
