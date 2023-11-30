@@ -2,7 +2,7 @@
 
 TO DO LIST:
 
-- [ ] int distinctValues[5000] = {0}; in assignColumnIndices : Adapter la taille du tableau au nombre de valeurs
+- [x] int distinctValues[5000] = {0}; in assignColumnIndices : Adapter la taille du tableau au nombre de valeurs
 - [ ] printLevel function : adapter le nombre de '-' en fonction de la valeur au sein de la cellule. le code actuel ne fonctionne que pour des valeurs entre 10 et 99
 
 RESTE A FAIRE

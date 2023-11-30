@@ -21,11 +21,13 @@ typedef struct {
 } SearchResult;
 
 // Function declarations
+int countCells(LevelList* list);
+int CountCaracterInBelowLevels(LevelList* list, int level);
 Cell* createCell(int value, int levels);
 LevelList* createLevelList(int maxLevels);
 void insertAtHead(LevelList* list, Cell* newCell);
 int maxColumns(LevelList* list);
-void assignColumnIndices(LevelList* list);
+void assignColumnIndices(LevelList* list, int numberOfCells);
 void printLevel(LevelList* list, int level);
 void printAllLevels(LevelList* list);
 

@@ -1,1 +1,1 @@
-void fillTableWithRandomValues(LevelList* list, int n)
+printf("%d", value);
