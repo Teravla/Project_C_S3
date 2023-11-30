@@ -86,7 +86,7 @@ int maxColumns(LevelList* list) {
 }
 
 void assignColumnIndices(LevelList* list) {
-    int distinctValues[100] = {0}; // Supposons un maximum de 100 valeurs distinctes
+    int distinctValues[5000] = {0}; // Supposons un maximum de 5000 valeurs distinctes
     int count = 0;
 
     // Recherche de valeurs distinctes et affectation des indices
@@ -96,7 +96,7 @@ void assignColumnIndices(LevelList* list) {
             int value = current->value;
             int found = 0;
 
-            // Vérification si la valeur existe déjà dans distinctValues
+            // Verification si la valeur existe dejà dans distinctValues
             for (int j = 0; j < count; j++) {
                 if (distinctValues[j] == value) {
                     found = 1;
@@ -104,7 +104,7 @@ void assignColumnIndices(LevelList* list) {
                 }
             }
             
-            // Si la valeur n'existe pas, elle est ajoutée à distinctValues
+            // Si la valeur n'existe pas, elle est ajoutee à distinctValues
             if (!found) {
                 distinctValues[count] = value;
                 count++;
@@ -203,25 +203,25 @@ void printAllLevels(LevelList* list) {
 
 // Fonction pour rechercher une valeur dans la liste en utilisant tous les niveaux
 SearchResult searchAllLevels(LevelList* list, int value) {
-    SearchResult result = {NULL, -1, -1};  // Initialisation des valeurs par défaut
+    SearchResult result = {NULL, -1, -1};  // Initialisation des valeurs par defaut
 
     for (int i = list->maxLevels - 1; i >= 0; i--) {
         Cell* current = list->head->next[i];
         while (current != NULL) {
             if (current->value == value) {
-                // Stocker les résultats et la hauteur
+                // Stocker les resultats et la hauteur
                 result.cell = current;
                 result.columnIndex = current->column;
-                result.height = i + 1;  // Hauteur est indexée à partir de 1
+                result.height = i + 1;  // Hauteur est indexee à partir de 1
                 return result;
             } else if (current->value < value) {
-                break;  // Passer au niveau inférieur si la valeur actuelle est inférieure à la recherche
+                break;  // Passer au niveau inferieur si la valeur actuelle est inferieure à la recherche
             }
             current = current->next[i];
         }
     }
 
-    return result;  // La valeur n'a pas été trouvée dans la liste
+    return result;  // La valeur n'a pas ete trouvee dans la liste
 }
 
 // Fonction pour comparer les temps de recherche entre le niveau 0 et tous les niveaux
@@ -243,7 +243,7 @@ void compareSearchTimes(LevelList* list, int value) {
     end = clock();
     double timeAllLevels = ((double) (end - start)) / CLOCKS_PER_SEC;
 
-    // Affichage des résultats
+    // Affichage des resultats
     if (resultLevel0 != NULL) {
         printf("Level 0 Search: Found value %d at column index %d\n", resultLevel0->value, resultLevel0->column);
     } else {
@@ -271,16 +271,16 @@ LevelList* createRandomLevelList(int numLevels) {
     return newList;
 }
 
-// Fonction pour remplir le tableau avec n valeurs aléatoires
+// Fonction pour remplir le tableau avec n valeurs aleatoires
 void fillTableWithRandomValues(LevelList* list, int n) {
-    printf("Remplissage du tableau avec %d valeurs aléatoires :\n", n);
+    printf("Remplissage du tableau avec %d valeurs aleatoires :\n", n);
 
-    srand(time(NULL));  // Initialisation de la graine pour la génération aléatoire
+    srand(time(NULL));  // Initialisation de la graine pour la generation aleatoire
 
-    // Remplissage du tableau avec n valeurs aléatoires
+    // Remplissage du tableau avec n valeurs aleatoires
     for (int i = 0; i < n; i++) {
-        int value = rand() % n;  // Valeur aléatoire entre 0 et 99
-        int levels = rand() % list->maxLevels + 1;  // Niveau aléatoire entre 1 et maxLevels
+        int value = rand() % n;  // Valeur aleatoire entre 0 et 99
+        int levels = rand() % list->maxLevels + 1;  // Niveau aleatoire entre 1 et maxLevels
 
         Cell* newCell = createCell(value, levels);
         insertAtHead(list, newCell);
@@ -299,12 +299,19 @@ int main() {
 
 
     int option;
-    
+
+    printf("Bienvenue sur le programme de recherche d'une valeur dans une liste.\n");
+    printf("Vous pouvez choisir entre trois options:\n");
+
+    printf("1. Rechercher une valeur dans une liste a partir de cellules predefinies\n");
+    printf("2. Rechercher une valeur dans une liste a partir de cellules que vous choississez\n");
+    printf("3. Rechercher une valeur dans une liste a partir de n cellules aleatoires. Vous choississez 'n'.\n");
+
     printf("Voulez-vous utiliser le schema par defaut (0), le schema manuel (1) ou l'utilisation d'une liste de n valeurs (2) ? (0, 1 ou 2) : ");
     scanf("%d", &option);
 
     if (option == 0) {
-        // Utiliser le schéma par défaut
+        // Utiliser le schema par defaut
         LevelList* myList = createLevelList(4);
 
         Cell* cell1 = createCell(10, 3);
@@ -325,13 +332,14 @@ int main() {
         int searchValue = 10;  // Modifier la valeur à rechercher
         compareSearchTimes(myList, searchValue);
 
-        free(myList);  // Libérer la mémoire allouée à la fin de la fonction
+        free(myList);  // Liberer la memoire allouee à la fin de la fonction
     } else if (option == 1) {
         // Saisir les valeurs depuis l'utilisateur
         int numLevels;
 
-        printf("Combien de niveaux souhaitez-vous creer ? ");
+        printf("Combien de niveaux souhaitez-vous creer ?");
         scanf("%d", &numLevels);
+
 
         if (numLevels <= 0) {
             printf("Nombre de niveaux invalide.\n");
@@ -377,7 +385,7 @@ int main() {
     } else if (option == 2) {
         int numLevels;
 
-        printf("Combien de niveaux souhaitez-vous créer ? ");
+        printf("Combien de niveaux souhaitez-vous creer ? ");
         scanf("%d", &numLevels);
 
         if (numLevels <= 0) {
@@ -388,11 +396,11 @@ int main() {
         LevelList* randomList = createRandomLevelList(numLevels);
 
         int numRandomValues;
-        printf("Combien de valeurs aléatoires souhaitez-vous ajouter ? ");
+        printf("Combien de valeurs aleatoires souhaitez-vous ajouter ? ");
         scanf("%d", &numRandomValues);
 
         if (numRandomValues <= 0) {
-            printf("Nombre de valeurs aléatoires invalide.\n");
+            printf("Nombre de valeurs aleatoires invalide.\n");
             free(randomList);
             return 1;
         }
