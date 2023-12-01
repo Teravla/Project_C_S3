@@ -77,12 +77,12 @@ void addCell(LevelList* myList) {
     int choiceLevel;
     int choiceValue;
 
-    // Créer un tableau avec toutes les valeurs de la liste
+    // Creer un tableau avec toutes les valeurs de la liste
     int maxCols = maxColumns(myList);
     int* allValues = (int*)malloc(maxCols * sizeof(int));
 
     if (allValues == NULL) {
-        fprintf(stderr, "Erreur d'allocation mémoire pour le tableau des valeurs\n");
+        fprintf(stderr, "Erreur d'allocation memoire pour le tableau des valeurs\n");
         exit(EXIT_FAILURE);
     }
 
@@ -113,23 +113,23 @@ void addCell(LevelList* myList) {
         printf("Valeur de la nouvelle cellule : ");
         scanf("%d", &choiceValue);
 
-        // Vérifier si la valeur est déjà présente dans la liste
+        // Verifier si la valeur est deja presente dans la liste
         for (int i = 0; i < index; i++) {
             if (allValues[i] == choiceValue) {
                 printf("Cette valeur est deja presente dans la liste. Veuillez en choisir une autre.\n");
-                choiceValue = -1;  // Réinitialiser la valeur pour forcer la boucle
+                choiceValue = -1;  // Reinitialiser la valeur pour forcer la boucle
                 break;
             }
         }
     } while (choiceValue <= 0);
 
-    // Créer une nouvelle cellule
+    // Creer une nouvelle cellule
     Cell* newCell = createCell(choiceValue, choiceLevel);
 
-    // Insérer la nouvelle cellule à la tête de la liste
+    // Inserer la nouvelle cellule a la tête de la liste
     insertAtHead(myList, newCell);
 
-    // // Réinsérer toutes les cellules dans la liste
+    // // Reinserer toutes les cellules dans la liste
     // for (int i = 0; i < index; i++) {
     //     Cell* existingCell = createCell(allValues[i], choiceLevel);
     //     insertAtHead(myList, existingCell);
@@ -137,7 +137,7 @@ void addCell(LevelList* myList) {
 
     free(allValues);
 
-    printf("Nouvelle cellule ajoutée avec succès.\n");
+    printf("Nouvelle cellule ajoutee avec succès.\n");
     printf("Nouvelle affichage de la liste : \n");
 
     int numberOfCells = countCells(myList);
@@ -146,18 +146,18 @@ void addCell(LevelList* myList) {
 }
 
 
-// Fonction pour supprimer une cellule de la liste (à adapter selon votre implémentation)
+// Fonction pour supprimer une cellule de la liste (a adapter selon votre implementation)
 void deleteCell(LevelList* myList) {
     printf("\nVous avez choisi de supprimer une cellule.\n");
 
     int valueToDelete;
 
-    // Créer un tableau avec toutes les valeurs de la liste
+    // Creer un tableau avec toutes les valeurs de la liste
     int maxCols = maxColumns(myList);
     int* allValues = (int*)malloc(maxCols * sizeof(int));
 
     if (allValues == NULL) {
-        fprintf(stderr, "Erreur d'allocation mémoire pour le tableau des valeurs\n");
+        fprintf(stderr, "Erreur d'allocation memoire pour le tableau des valeurs\n");
         exit(EXIT_FAILURE);
     }
 
@@ -178,12 +178,12 @@ void deleteCell(LevelList* myList) {
     }
     printf("\n");
 
-    // Saisir la valeur de la cellule à supprimer
+    // Saisir la valeur de la cellule a supprimer
     do {
         printf("Valeur de la cellule a supprimer : ");
         scanf("%d", &valueToDelete);
 
-        // Vérifier si la valeur est dans le tableau des valeurs
+        // Verifier si la valeur est dans le tableau des valeurs
         int found = 0;
         for (int i = 0; i < index; i++) {
             if (allValues[i] == valueToDelete) {
@@ -194,17 +194,17 @@ void deleteCell(LevelList* myList) {
 
         if (!found) {
             printf("Cette valeur n'est pas presente dans la liste. Veuillez reessayer.\n");
-            valueToDelete = -1;  // Réinitialiser la valeur pour forcer la boucle
+            valueToDelete = -1;  // Reinitialiser la valeur pour forcer la boucle
         }
     } while (valueToDelete <= 0);
 
-    // Recherche de la cellule à supprimer à tous les niveaux
+    // Recherche de la cellule a supprimer a tous les niveaux
     current = myList->head;
     Cell* prev = NULL;
 
     while (current != NULL) {
         if (current->value == valueToDelete) {
-            // Mettre à jour les pointeurs pour contourner la cellule à supprimer
+            // Mettre a jour les pointeurs pour contourner la cellule a supprimer
             if (prev != NULL) {
                 for (int level = 0; level < current->levels; level++) {
                     prev->next[level] = current->next[level];
@@ -215,9 +215,9 @@ void deleteCell(LevelList* myList) {
                 }
             }
 
-            free(current);  // Libérer la mémoire de la cellule à supprimer
-            printf("Cellule supprimée avec succès.\n");
-            break;  // Sortir de la boucle dès que la cellule est trouvée et supprimée
+            free(current);  // Liberer la memoire de la cellule a supprimer
+            printf("Cellule supprimee avec succès.\n");
+            break;  // Sortir de la boucle dès que la cellule est trouvee et supprimee
         }
 
         prev = current;
@@ -225,7 +225,7 @@ void deleteCell(LevelList* myList) {
     }
 
     if (current == NULL) {
-        printf("Cellule non trouvée dans la liste.\n");
+        printf("Cellule non trouvee dans la liste.\n");
     }
     
 
@@ -534,9 +534,84 @@ void printOneLevel() {
 /* ------------------------------------------------------- */
 
 
-void searchCell() {
-    printf("A faire");
+void searchCell(LevelList* list) {
+    printf("\nVous avez choisi de rechercher une cellule dans la liste.\n");
+
+    int searchChoice;
+    int searchValue;
+    int found = 0;
+    Cell* current = list->head->next[0];
+    int position = 0;
+
+    printf("Vous avez deux modes de recherche :\n");
+    printf("0. Rechercher la cellule a partir de sa valeur\n");
+    printf("1. Rechercher la cellule a partir de son indice de colonne\n");
+
+    do {
+        printf("Votre choix : ");
+        scanf("%d", &searchChoice);
+    } while (searchChoice != 0 && searchChoice != 1);
+
+    switch (searchChoice)
+    {
+    case 0:
+        printf("Veuillez renseigner la valeur de la cellule que vous souhaitez rechercher : ");
+        scanf("%d", &searchValue);
+
+        // Rechercher dans la liste la cellule a partir de sa valeur
+        
+
+        while (current != NULL) {
+            if (current->value == searchValue) {
+                found = 1;
+                break;
+            }
+            current = current->next[0];
+            position++;
+        }
+
+        if (found) {
+            printf("La cellule avec la valeur %d a ete trouvee.\n", searchValue);
+            printf("Position dans la liste : %d\n", position+1); //'+1' car user compte à partir de 1
+            printf("Hauteur de la cellule : %d\n", current->levels);
+        } else {
+            printf("La cellule avec la valeur %d n'a pas ete trouvee dans la liste.\n", searchValue);
+        }
+
+        break;
+
+    case 1:
+
+        do {
+            printf("Veuillez renseigner l'indice de la position de la cellule que vous souhaitez rechercher : ");
+            scanf("%d", &searchValue);
+        } while (searchValue < 0);
+        searchValue--; //'-1' car user compte à partir de 1
+
+        // Afficher le contenu et la hauteur de la cellule a l'indice searchValue
+        
+
+        while (current != NULL && position < searchValue) {
+            current = current->next[0];
+            position++;
+        }
+
+        if (current != NULL) {
+            printf("Contenu de la cellule a l'indice %d : %d\n", searchValue, current->value);
+            printf("Hauteur de la cellule : %d\n", current->levels);
+        } else {
+            printf("Indice invalide. La liste ne contient pas de cellule a l'indice %d+1.\n", searchValue);
+        }
+
+        break;
+
+
+    default:
+        printf("Error code 'searchCell-01', contact admin.\n");
+        break;
+    }
 }
+
 
 
 
@@ -800,7 +875,7 @@ int main() {
             deleteCell(myList);
             break;
         case 2:
-            searchCell();
+            searchCell(myList);
             break;
         case 3:
             printOneLevel();
@@ -811,7 +886,7 @@ int main() {
         }
 
 
-        // Implémentez vos fonctionnalités ici
+        // Implementez vos fonctionnalites ici
     } else if (optionFonctionalityChoice == 0) {
         main();  // Recommencer le programme
     } else {
