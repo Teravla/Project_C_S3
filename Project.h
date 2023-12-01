@@ -21,16 +21,20 @@ typedef struct {
 } SearchResult;
 
 // Function declarations
-int countCells(LevelList* list);
-int CountCaracterInBelowLevels(LevelList* list, int columnToCount);
-int numberCaracterInCell(LevelList* list, int column);
-int countCharPreviousCell(LevelList* list, int column);
-int nbCharPreviousCells(LevelList* list, int column);
+
+//List and cell creation
 Cell* createCell(int value, int levels);
-int CountColumn(LevelList* list, int column);
 LevelList* createLevelList(int maxLevels);
-int SumCharLenght(int* array, int size);
 void insertAtHead(LevelList* list, Cell* newCell);
+void addCell(LevelList* myList);
+
+//Display list
+int countCells(LevelList* list);
+int numberCaracterInCell(LevelList* list, int column);
+void printArray(int* array, int size);
+int SumCharLenght(int* array, int size);
+int tabcharlength(LevelList* list, int column);
+Cell* obtenirCellule(LevelList* list, int column);
 int maxColumns(LevelList* list);
 void assignColumnIndices(LevelList* list, int numberOfCells);
 void printLevel(LevelList* list, int level, int numberOfCells);
@@ -44,5 +48,11 @@ void fillTableWithRandomValues(LevelList* list, int n);
 // Recherche 
 SearchResult searchAllLevels(LevelList* list, int value); // Correction ici
 void compareSearchTimes(LevelList* list, int value);
+
+
+//Main
+LevelList* listPreset();
+LevelList* listManual();
+LevelList* listAlea();
 
 #endif

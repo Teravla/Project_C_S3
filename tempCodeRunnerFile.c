@@ -1,9 +1,5 @@
-int nbCharPreviousCell = numberCaracterInCell(list, k);
-                printf(" %d", nbCharPreviousCell);
-                int totalChars = (char_cell + nbCharPreviousCell +1);
-                //printf("%d", numberCaracterInCell(list, k));
-
-                // Affichage des tirets
-                for (int i = 0; i < totalChars; i++) {
-                    printf("-");
-                }
+// Réinsérer toutes les cellules dans la liste
+    // for (int i = 0; i < index; i++) {
+    //     Cell* existingCell = createCell(allValues[i], choiceLevel);
+    //     insertAtHead(myList, existingCell);
+    // }
