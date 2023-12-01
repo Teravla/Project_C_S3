@@ -522,10 +522,31 @@ int countCells(LevelList* list) {
 }
 
 
-void printOneLevel() {
-    printf("A faire");
+void printOneLevel(LevelList* list) {
+    printf("\n\nVous avez choisi d'afficher un seul niveau\n\n");
 
+    // Afficher le nombre de niveaux dans la liste
+    printf("Nombre de niveaux dans la liste : %d\n", list->maxLevels);
+
+    int levelToPrint;
+
+    // Demander a l'utilisateur le niveau a afficher
+    do {
+        printf("Veuillez saisir le niveau a afficher (entre 1 et %d) : ", list->maxLevels);
+        scanf("%d", &levelToPrint);
+    } while (levelToPrint < 1 || levelToPrint > list->maxLevels);
+
+    // Compter le nombre de cellules dans la liste
+    int numberOfCells = countCells(list);
+
+    // Afficher le niveau
+    printf("Affichage du niveau %d :\n", levelToPrint);
+
+    printLevel(list, levelToPrint, numberOfCells);
+
+    printf("\nNombre total de cellules dans le niveau %d : %d\n", levelToPrint, numberOfCells);
 }
+
 
 
 
@@ -572,7 +593,7 @@ void searchCell(LevelList* list) {
 
         if (found) {
             printf("La cellule avec la valeur %d a ete trouvee.\n", searchValue);
-            printf("Position dans la liste : %d\n", position+1); //'+1' car user compte à partir de 1
+            printf("Position dans la liste : %d\n", position+1); //'+1' car user compte a partir de 1
             printf("Hauteur de la cellule : %d\n", current->levels);
         } else {
             printf("La cellule avec la valeur %d n'a pas ete trouvee dans la liste.\n", searchValue);
@@ -586,7 +607,7 @@ void searchCell(LevelList* list) {
             printf("Veuillez renseigner l'indice de la position de la cellule que vous souhaitez rechercher : ");
             scanf("%d", &searchValue);
         } while (searchValue < 0);
-        searchValue--; //'-1' car user compte à partir de 1
+        searchValue--; //'-1' car user compte a partir de 1
 
         // Afficher le contenu et la hauteur de la cellule a l'indice searchValue
         
@@ -611,9 +632,6 @@ void searchCell(LevelList* list) {
         break;
     }
 }
-
-
-
 
 
 // Fonction pour rechercher une valeur dans la liste en utilisant tous les niveaux
@@ -854,7 +872,7 @@ int main() {
     printf("3. Afficher un seul niveau\n");
 
     do {
-        printf("Voulez-vous utiliser cette fonctionnalite? (1 ou 0) : ");
+        printf("Voulez-vous utiliser ces fonctionnalites? (1 ou 0) : ");
         scanf("%d", &optionFonctionalityChoice);
     } while (optionFonctionalityChoice < 0 || optionFonctionalityChoice > 1);
 
@@ -878,7 +896,7 @@ int main() {
             searchCell(myList);
             break;
         case 3:
-            printOneLevel();
+            printOneLevel(myList);
             break;
         default:
             printf("Error code 'main-02-02', contact admin.\n");

@@ -55,4 +55,9 @@ LevelList* listPreset();
 LevelList* listManual();
 LevelList* listAlea();
 
+void addCell(LevelList* myList);
+void deleteCell(LevelList* myList);
+void searchCell(LevelList* list);
+void printOneLevel(LevelList* list);
+
 #endif
