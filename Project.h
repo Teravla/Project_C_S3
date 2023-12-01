@@ -20,6 +20,7 @@ typedef struct Cell {
     struct Cell** next;
 } Cell;
 
+
 typedef struct LevelList {
     int maxLevels;
     Cell* head;
@@ -67,10 +68,13 @@ void searchContact(LevelList* list);
 void searchMeeting(LevelList* list);
 void searchMeetingByDate(LevelList* list);
 void searchMeetingByHour(LevelList* list);
+LevelList* addMeeting(LevelList* list);
+int meetingExists(LevelList* list, Cell* meeting);
 
 int countCharName(LevelList* list, int column);
 int countCharSurname(LevelList* list, int column);
 void capitalizeString(char* str);
+void insertAtHeadChar(LevelList* list, Cell* newCell);
 
 void printLevelChar(LevelList* list, int level, int numberOfCells);
 void printAllLevelsChar(LevelList* list, int numberOfCells);
