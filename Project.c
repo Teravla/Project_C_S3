@@ -2,7 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
+#include <ctype.h>
+
 #include "Project.h"
+
 #define CHAR_CELL 18
 
 
@@ -723,8 +727,434 @@ void fillTableWithRandomValues(LevelList* list, int n) {
 
 
 /* ------------------------------------------------------- */
+/* -----------------------  AGENDA ----------------------- */
+/* ------------------------------------------------------- */
+
+
+
+LevelList* addContact(LevelList* myList) {
+    Cell* newCell = createCell(0, 1);
+    int choice;
+
+    printf("Entrer le nom du contact sous la forme (nom_prenom) : ");
+    scanf(" %99[^_]_%99s", newCell->name, newCell->surname);
+
+    // À ce stade, newCell->name et newCell->surname contiennent le nom et le prénom séparés
+    // Inserer la nouvelle cellule dans la liste
+    insertAtHead(myList, newCell);
+
+    // Afficher le contenu de la cellule
+    printf("Nom: %s\n", newCell->name);
+    printf("Prenom: %s\n", newCell->surname);
+    printf("Valeur: %d\n", newCell->value);
+
+    do {
+        printf("Voulez vous ajouter une reunion ? (1/0) : ");
+        scanf("%d", &choice);
+    } while (choice != 1 && choice != 0);
+    
+
+    if (choice == 1) {
+        printf("Entrer la date de la reunion sous la forme (jour-mois-année) : ");
+        scanf("%d-%d-%d", &newCell->day, &newCell->month, &newCell->year);
+
+        printf("Entrer l'heure de la reunion sous la forme (heure:minute:seconde) : ");
+        scanf("%d:%d:%d", &newCell->hour, &newCell->minute, &newCell->second);
+    } else {
+        newCell->day = 0;
+        newCell->month = 0;
+        newCell->year = 0;
+        newCell->hour = 0;
+        newCell->minute = 0;
+        newCell->second = 0;
+    }
+
+
+    return myList;
+}
+
+
+LevelList* deleteContact(LevelList* myList) {
+    char nameToDelete[100];
+
+    printf("Vous avez choisi de supprimer un contact.\n");
+
+    // Boucle do-while pour la saisie sécurisée
+    do {
+        printf("Veuillez choisir le nom du contact : ");
+        if (scanf("%99s", nameToDelete) != 1) {
+            printf("Erreur de saisie. Veuillez réessayer.\n");
+            // Effacer le tampon d'entrée en cas d'erreur
+            while (getchar() != '\n');
+            continue;
+        }
+
+        // Sortir de la boucle si la saisie est correcte
+        break;
+
+    } while (1);
+
+    // Recherche du contact dans la liste
+    Cell* current = myList->head;
+    Cell* prev = NULL;
+
+
+    while (current != NULL) {
+        // Comparer le nom du contact avec celui saisi
+        if (strcmp(current->name, nameToDelete) == 0) {
+            // La cellule correspondante a été trouvée, supprimer la cellule
+            if (prev != NULL) {
+                prev->next[0] = current->next[0];
+            } else {
+                myList->head = current->next[0];
+            }
+
+            free(current);  // Libérer la mémoire de la cellule à supprimer
+            printf("Contact supprime avec succes.\n");
+            break;
+        }
+
+        prev = current;
+        current = current->next[0];
+    }
+
+    // Afficher un message si le contact n'a pas été trouvé
+    if (current == NULL) {
+        printf("Contact non trouve dans la liste.\n");
+    }
+
+    return myList;
+}
+
+
+//Affichage
+
+int countCharName(LevelList* list, int column) {
+    // Initialisation du compteur
+    int count = 0;
+
+    // Parcourir la liste pour trouver la cellule à la colonne spécifiée
+    Cell* current = list->head;
+    while (current != NULL) {
+        if (current->column == column) {
+            // Trouvé la cellule à la colonne spécifiée, compter les caractères du nom
+            count = strlen(current->name);
+            break;
+        }
+        current = current->next[0];
+    }
+
+    return count;
+}
+
+int countCharSurname(LevelList* list, int column) {
+    // Initialisation du compteur
+    int count = 0;
+
+    // Parcourir la liste pour trouver la cellule à la colonne spécifiée
+    Cell* current = list->head;
+    while (current != NULL) {
+        if (current->column == column) {
+            // Trouvé la cellule à la colonne spécifiée, compter les caractères du prénom
+            count = strlen(current->surname);
+            break;
+        }
+        current = current->next[0];
+    }
+
+    return count;
+}
+
+void capitalizeString(char* str) {
+    for (int i = 0; str[i] != '\0'; ++i) {
+        str[i] = toupper(str[i]);
+    }
+}
+
+//Affichage 
+void printLevelChar(LevelList* list, int level, int numberOfCells) {
+    printf("[ list head_%d | @ - ] --", level);
+
+    Cell* current = list->head->next[level];
+    int char_cell = 42;
+    
+    int maxCols = maxColumns(list);
+    int* distinctValues = malloc(numberOfCells * sizeof(int));
+    if (distinctValues == NULL) {
+        fprintf(stderr, "Erreur d'allocation memoire\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (current == NULL) {
+        // Affichage du nombre total de caractères pour chaque colonne
+        for (int k = 0; k < maxCols; k++) {
+            int totalChars = (char_cell + (countCharName(list, k) + countCharSurname(list, k)));
+
+            // Affichage des tirets
+            for (int i = 0; i < totalChars; i++) {
+                printf("-");
+            }
+        }
+        printf("-> NULL\n");
+        return;
+    }
+
+
+
+    int* printedColumns = (int*)calloc(maxCols, sizeof(int));
+    int lastPrinted = -1;
+    
+
+    while (current != NULL) {
+
+        int nbCharLenght = tabcharlength(list, current->column);
+
+        for (int i = lastPrinted + 1; i < current->column; i++) {
+            
+            int nbCharPreviousCell = countCharName(list, i) + countCharSurname(list, i);
+
+            for (int j = 0; j < char_cell + nbCharPreviousCell ; j++) {
+                printf("-");
+            }
+            printedColumns[i] = 1;
+        }
+        capitalizeString(current->name);
+        printf("> [ %s %s ~ %02d-%02d-%04d %02dh%02d:%02d (%d) | @ - ]", current->name, current->surname, current->day, current->month, current->year, current->hour, current->minute, current->second, current->column);
+
+        if (current->next[level] != NULL && current->next[level]->column != current->column) {
+            printf(" --");
+        } else {
+            printf(" ");
+            int remainingColumns = maxCols - (current->column +1);
+            
+            for (int k = 0; k < remainingColumns; k++) {
+                // Obtenez la cellule correspondant a la colonne (fin de la liste - k)
+                Cell* celluleCourante = obtenirCellule(list, maxCols - k - 1);
+                
+                int nbCharCurrentCell = countCharName(list, celluleCourante->column) + countCharSurname(list, celluleCourante->column);
+                int totalChars = char_cell + nbCharCurrentCell;
+                
+                // Affichage des tirets
+                for (int i = 0; i < totalChars; i++) {
+                    printf("-");
+                }
+            }
+            printf("---> NULL\n");
+            break;
+        }
+
+        printedColumns[current->column] = 1;
+        lastPrinted = current->column;
+        current = current->next[level];
+    }
+
+    free(printedColumns);
+}
+
+void printAllLevelsChar(LevelList* list, int numberOfCells) {
+    for (int i = 0; i < list->maxLevels; i++) {
+        printLevelChar(list, i, numberOfCells);
+    }
+}
+
+
+/* ------------------------------------------------------- */
 /* ------------------------  MAIN ------------------------ */
 /* ------------------------------------------------------- */
+
+
+
+int main() {
+    int mainOption;
+    int option;
+    int optionFonctionalityChoice;
+    int optionFonctionality;
+
+
+    printf("\n\n\nBIENVENUE SUR VOTRE AGENDA\n\n\n");
+
+
+    printf("Pour le pass au mode developpeur(Partie 1), tapper 1, sinon taper sur n'importe quel autre nombre : ");
+    scanf("%d", &mainOption);
+
+    if (mainOption == 1){
+        LevelList* myList = NULL;
+
+        printf("Bienvenue sur le programme de recherche d'une valeur dans une liste.\n");
+        printf("Vous pouvez choisir entre trois options:\n");
+
+        printf("1. Rechercher une valeur dans une liste a partir de cellules predefinies\n");
+        printf("2. Rechercher une valeur dans une liste a partir de cellules que vous choississez\n");
+        printf("3. Rechercher une valeur dans une liste a partir de n cellules aleatoires. Vous choississez 'n'.\n");
+
+        do {
+            printf("Voulez-vous utiliser le schema par defaut (0), le schema manuel (1), l'utilisation d'une liste de n valeurs (2) ou quitter le programme (3) ? (0, 1, 2 ou 3) : ");
+            scanf("%d", &option);
+        } while (option < 0 || option > 3);
+
+        printf("\n\n");
+
+        switch (option) {
+            case 0:
+                myList = listPreset();
+                break;
+            case 1:
+                myList = listManual();
+                break;
+            case 2:
+                myList = listAlea();
+                break;
+            case 3:
+                printf("Fin du programme.\n");
+                return 0;
+            default:
+                printf("Error code 'main-01', contact admin.\n");
+                return 1;
+        }
+
+        do {
+            printf("\nLa liste precedente est a present affichee. Maintenant, vous pouvez utiliser les quelques fonctionnalites suivantes :\n");
+            printf("Vous pouvez choisir entre cinq options:\n");
+
+            printf("0. Ajouter un element\n");
+            printf("1. Supprimer un element\n");
+            printf("2. Rechercher un element\n");
+            printf("3. Afficher un seul niveau\n");
+
+            do {
+                printf("Voulez-vous utiliser ces fonctionnalites? (1 pour Oui, 0 pour Non) : ");
+                scanf("%d", &optionFonctionalityChoice);
+            } while (optionFonctionalityChoice < 0 || optionFonctionalityChoice > 1);
+
+            if (optionFonctionalityChoice == 1) {
+                printf("Choississez la fonctionnalite (0, 1, 2 ou 3) : \n");
+
+                do {
+                    printf("Votre choix : ");
+                    scanf("%d", &optionFonctionality);
+                } while (optionFonctionality < 0 || optionFonctionality > 3);
+
+                switch (optionFonctionality) {
+                    case 0:
+                        addCell(myList);
+                        break;
+                    case 1:
+                        deleteCell(myList);
+                        break;
+                    case 2:
+                        searchCell(myList);
+                        break;
+                    case 3:
+                        printOneLevel(myList);
+                        break;
+                    default:
+                        printf("Error code 'main-02-02', contact admin.\n");
+                        break;
+                }
+
+            } else if (optionFonctionalityChoice == 0) {
+                printf("Retour au menu principal.\n");
+
+            } else {
+                printf("Error code 'main-02-01', contact admin.\n");
+                return 1;
+            }
+
+        } while (optionFonctionalityChoice == 1);
+
+    } else {
+
+        int choiceAgenda;
+
+        LevelList* myList = createLevelList(5);
+
+        char fileName[100];
+        char name[100];
+        char surname[100] = "Valentin";
+
+        // printf("\n\n\nBienvenue sur votre agenda collaboratif.\n");
+
+        // // Boucle do-while pour la saisie securisee
+        // do {
+        //     printf("Renseignez votre nom et votre prenom (sous la forme 'nom_prenom') : ");
+        //     if (scanf("%99s", fileName) != 1) {
+        //         printf("Erreur de saisie. Veuillez reessayer.\n");
+        //         // Effacer le tampon d'entree en cas d'erreur
+        //         while (getchar() != '\n');
+        //         continue;
+        //     }
+
+        //     // Utilisation de sscanf pour extraire le nom et le prenom de fileName
+        //     if (sscanf(fileName, "%[^_]_%s", name, surname) == 2) {
+        //         // Afficher le nom et le prenom separement
+        //         // printf("Nom: %s\n", name);
+        //         // printf("Prenom: %s\n", surname);
+        //         break;  // Sortir de la boucle si le format est correct
+        //     } else {
+        //         printf("Format incorrect. Assurez-vous d'utiliser la forme 'nom_prenom'.\n");
+        //     }
+        // } while (1);
+
+
+        do {
+
+            printf("\n\nBonjour %s!\n\n", surname);
+
+            printf("Bienvenue dans votre menu.\nVous pouvez : \n\n");
+
+            printf("1. Ajouter un ou plusieurs contacts.\n");
+            printf("2. Supprimer un ou plusieurs contacts.\n");
+            printf("3. Rechercher un contact.\n");
+            printf("4. Rechercher une reunion.\n");
+            printf("5. Assigner une nouvelle reunion a un contact.\n");
+            
+            do {
+                printf("Que voulez-vous faire (0 pour quitter): ");
+                scanf("%d", &choiceAgenda);
+            } while (choiceAgenda < 0 || choiceAgenda > 5);
+
+            switch (choiceAgenda)
+            {
+            case 0:
+                printf("Au revoir %s!\n", surname);
+                return 0;
+                break;
+            case 1:
+                myList = addContact(myList);
+                printf("Ajout effectue avec succes.\n");
+                printf("Affichage de votre agenda : \n");
+
+                int numberOfCells = countCells(myList);
+                assignColumnIndices(myList, numberOfCells);
+                printAllLevelsChar(myList, numberOfCells);
+
+                break;
+            case 2:
+                myList = deleteContact(myList);
+
+                int numberOfCell = countCells(myList);
+                assignColumnIndices(myList, numberOfCell);
+                printAllLevelsChar(myList, numberOfCell);
+                break;
+            case 3:
+                //searchContact(myList);
+                break;
+            case 4:
+                //searchMeeting(myList);
+                break;
+            case 5:
+                //addMeeting(myList);
+                break;
+            default:
+                break;
+            }
+
+        } while (choiceAgenda!= 0);
+
+    }
+    return 0;
+}
+
 
 LevelList* listPreset() {
     // Utiliser le schema par defaut
@@ -744,12 +1174,11 @@ LevelList* listPreset() {
 
     int numberOfCells = countCells(myList);
     assignColumnIndices(myList, numberOfCells);
-    printAllLevels(myList, 5);
+    printAllLevels(myList, numberOfCells);
     printf("\n");
 
     return myList;  // Liberer la memoire allouee a la fin de la fonction
 }
-
 
 LevelList* listManual() {
     // Saisir les valeurs depuis l'utilisateur
@@ -824,135 +1253,3 @@ LevelList* listAlea() {
 
     return randomList; 
 }
-
-
-int main() {
-    int mainOption;
-    int option;
-    int optionFonctionalityChoice;
-    int optionFonctionality;
-
-
-    printf("\n\n\nBIENVENUE SUR VOTRE AGENDA\n\n\n");
-
-
-    printf("Pour le pass au mode développeur(Partie 1), tapper 1, sinon taper sur n'importe quel autre nombre\n\n");
-    scanf("%d", &mainOption);
-
-    if (mainOption == 1){
-        LevelList* myList = NULL;
-
-        printf("Bienvenue sur le programme de recherche d'une valeur dans une liste.\n");
-        printf("Vous pouvez choisir entre trois options:\n");
-
-        printf("1. Rechercher une valeur dans une liste a partir de cellules predefinies\n");
-        printf("2. Rechercher une valeur dans une liste a partir de cellules que vous choississez\n");
-        printf("3. Rechercher une valeur dans une liste a partir de n cellules aleatoires. Vous choississez 'n'.\n");
-
-        do {
-            printf("Voulez-vous utiliser le schema par defaut (0), le schema manuel (1), l'utilisation d'une liste de n valeurs (2) ou quitter le programme (3) ? (0, 1, 2 ou 3) : ");
-            scanf("%d", &option);
-        } while (option < 0 || option > 3);
-
-        printf("\n\n");
-
-        switch (option) {
-            case 0:
-                myList = listPreset();
-                break;
-            case 1:
-                myList = listManual();
-                break;
-            case 2:
-                myList = listAlea();
-                break;
-            case 3:
-                printf("Fin du programme.\n");
-                return 0;
-            default:
-                printf("Error code 'main-01', contact admin.\n");
-                return 1;
-        }
-
-        do {
-            printf("\nLa liste precedente est a present affichee. Maintenant, vous pouvez utiliser les quelques fonctionnalites suivantes :\n");
-            printf("Vous pouvez choisir entre cinq options:\n");
-
-            printf("0. Ajouter un element\n");
-            printf("1. Supprimer un element\n");
-            printf("2. Rechercher un element\n");
-            printf("3. Afficher un seul niveau\n");
-            printf("4. Rercher d'un élement à partir du niveau le plus haut");
-
-            do {
-                printf("Voulez-vous utiliser ces fonctionnalites? (1 pour Oui, 0 pour Non) : ");
-                scanf("%d", &optionFonctionalityChoice);
-            } while (optionFonctionalityChoice < 0 || optionFonctionalityChoice > 1);
-
-            if (optionFonctionalityChoice == 1) {
-                printf("Choississez la fonctionnalite (0, 1, 2 , 3 ou 4) : \n");
-
-                do {
-                    printf("Votre choix : ");
-                    scanf("%d", &optionFonctionality);
-                } while (optionFonctionality < 0 || optionFonctionality > 4);
-
-                switch (optionFonctionality) {
-                    case 0:
-                        addCell(myList);
-                        break;
-                    case 1:
-                        deleteCell(myList);
-                        break;
-                    case 2:
-                        searchCell(myList);
-                        break;
-                    case 3:
-                        printOneLevel(myList);
-                        break;
-                    case 4:
-                        searchHighestLevel(myList);
-                        break;
-                    default:
-                        printf("Error code 'main-02-02', contact admin.\n");
-                        break;
-                }
-
-            } else if (optionFonctionalityChoice == 0) {
-                printf("Retour au menu principal.\n");
-
-            } else {
-                printf("Error code 'main-02-01', contact admin.\n");
-                return 1;
-            }
-
-        } while (optionFonctionalityChoice == 1);
-
-    } else {
-
-        char fileName[100];
-        char name[100];
-        char surname[100];
-
-        printf("Bienvenue sur votre agenda collaboratif.\n");
-        printf("Dans un premier temps, renseignez votre nom et votre prénom (sous la forme 'nom_prenom'):\n");
-
-        scanf("%s", fileName);
-
-        // Utilisation de sscanf pour extraire le nom et le prénom de fileName
-        if (sscanf(fileName, "%[^_]_%s", name, surname) == 2) {
-            // Afficher le nom et le prénom séparément
-            printf("Nom: %s\n", name);
-            printf("Prénom: %s\n", surname);
-        } else {
-            printf("Format incorrect. Assurez-vous d'utiliser la forme 'nom_prenom'.\n");
-        }
-
-        
-
-
-    }
-    return 0;
-}
-
-
