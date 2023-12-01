@@ -827,94 +827,131 @@ LevelList* listAlea() {
 
 
 int main() {
+    int mainOption;
     int option;
     int optionFonctionalityChoice;
     int optionFonctionality;
 
-    LevelList* myList = NULL;
 
-    printf("Bienvenue sur le programme de recherche d'une valeur dans une liste.\n");
-    printf("Vous pouvez choisir entre trois options:\n");
+    printf("\n\n\nBIENVENUE SUR VOTRE AGENDA\n\n\n");
 
-    printf("1. Rechercher une valeur dans une liste a partir de cellules predefinies\n");
-    printf("2. Rechercher une valeur dans une liste a partir de cellules que vous choississez\n");
-    printf("3. Rechercher une valeur dans une liste a partir de n cellules aleatoires. Vous choississez 'n'.\n");
 
-    do {
-        printf("Voulez-vous utiliser le schema par defaut (0), le schema manuel (1), l'utilisation d'une liste de n valeurs (2) ou quitter le programme (3) ? (0, 1, 2 ou 3) : ");
-        scanf("%d", &option);
-    } while (option < 0 || option > 3);
+    printf("Pour le pass au mode développeur(Partie 1), tapper 1, sinon taper sur n'importe quel autre nombre\n\n");
+    scanf("%d", &mainOption);
 
-    printf("\n\n");
+    if (mainOption == 1){
+        LevelList* myList = NULL;
 
-    switch (option) {
-        case 0:
-            myList = listPreset();
-            break;
-        case 1:
-            myList = listManual();
-            break;
-        case 2:
-            myList = listAlea();
-            break;
-        case 3:
-            printf("Fin du programme.\n");
-            return 0;
-        default:
-            printf("Error code 'main-01', contact admin.\n");
-            return 1;
-    }
-
-    do {
-        printf("\nLa liste precedente est a present affichee. Maintenant, vous pouvez utiliser les quelques fonctionnalites suivantes :\n");
+        printf("Bienvenue sur le programme de recherche d'une valeur dans une liste.\n");
         printf("Vous pouvez choisir entre trois options:\n");
 
-        printf("0. Ajouter un element\n");
-        printf("1. Supprimer un element\n");
-        printf("2. Rechercher un element\n");
-        printf("3. Afficher un seul niveau\n");
+        printf("1. Rechercher une valeur dans une liste a partir de cellules predefinies\n");
+        printf("2. Rechercher une valeur dans une liste a partir de cellules que vous choississez\n");
+        printf("3. Rechercher une valeur dans une liste a partir de n cellules aleatoires. Vous choississez 'n'.\n");
 
         do {
-            printf("Voulez-vous utiliser ces fonctionnalites? (1 pour Oui, 0 pour Non) : ");
-            scanf("%d", &optionFonctionalityChoice);
-        } while (optionFonctionalityChoice < 0 || optionFonctionalityChoice > 1);
+            printf("Voulez-vous utiliser le schema par defaut (0), le schema manuel (1), l'utilisation d'une liste de n valeurs (2) ou quitter le programme (3) ? (0, 1, 2 ou 3) : ");
+            scanf("%d", &option);
+        } while (option < 0 || option > 3);
 
-        if (optionFonctionalityChoice == 1) {
-            printf("Choississez la fonctionnalite (0 pour Ajouter, 1 pour Supprimer, 2 pour Rechercher, 3 pour Afficher un seul niveau) : \n");
+        printf("\n\n");
 
-            do {
-                printf("Votre choix : ");
-                scanf("%d", &optionFonctionality);
-            } while (optionFonctionality < 0 || optionFonctionality > 3);
-
-            switch (optionFonctionality) {
-                case 0:
-                    addCell(myList);
-                    break;
-                case 1:
-                    deleteCell(myList);
-                    break;
-                case 2:
-                    searchCell(myList);
-                    break;
-                case 3:
-                    printOneLevel(myList);
-                    break;
-                default:
-                    printf("Error code 'main-02-02', contact admin.\n");
-                    break;
-            }
-
-        } else if (optionFonctionalityChoice == 0) {
-            printf("Retour au menu principal.\n");
-
-        } else {
-            printf("Error code 'main-02-01', contact admin.\n");
-            return 1;
+        switch (option) {
+            case 0:
+                myList = listPreset();
+                break;
+            case 1:
+                myList = listManual();
+                break;
+            case 2:
+                myList = listAlea();
+                break;
+            case 3:
+                printf("Fin du programme.\n");
+                return 0;
+            default:
+                printf("Error code 'main-01', contact admin.\n");
+                return 1;
         }
 
-    } while (optionFonctionalityChoice == 1);
+        do {
+            printf("\nLa liste precedente est a present affichee. Maintenant, vous pouvez utiliser les quelques fonctionnalites suivantes :\n");
+            printf("Vous pouvez choisir entre cinq options:\n");
 
+            printf("0. Ajouter un element\n");
+            printf("1. Supprimer un element\n");
+            printf("2. Rechercher un element\n");
+            printf("3. Afficher un seul niveau\n");
+            printf("4. Rercher d'un élement à partir du niveau le plus haut");
+
+            do {
+                printf("Voulez-vous utiliser ces fonctionnalites? (1 pour Oui, 0 pour Non) : ");
+                scanf("%d", &optionFonctionalityChoice);
+            } while (optionFonctionalityChoice < 0 || optionFonctionalityChoice > 1);
+
+            if (optionFonctionalityChoice == 1) {
+                printf("Choississez la fonctionnalite (0, 1, 2 , 3 ou 4) : \n");
+
+                do {
+                    printf("Votre choix : ");
+                    scanf("%d", &optionFonctionality);
+                } while (optionFonctionality < 0 || optionFonctionality > 4);
+
+                switch (optionFonctionality) {
+                    case 0:
+                        addCell(myList);
+                        break;
+                    case 1:
+                        deleteCell(myList);
+                        break;
+                    case 2:
+                        searchCell(myList);
+                        break;
+                    case 3:
+                        printOneLevel(myList);
+                        break;
+                    case 4:
+                        searchHighestLevel(myList);
+                        break;
+                    default:
+                        printf("Error code 'main-02-02', contact admin.\n");
+                        break;
+                }
+
+            } else if (optionFonctionalityChoice == 0) {
+                printf("Retour au menu principal.\n");
+
+            } else {
+                printf("Error code 'main-02-01', contact admin.\n");
+                return 1;
+            }
+
+        } while (optionFonctionalityChoice == 1);
+
+    } else {
+
+        char fileName[100];
+        char name[100];
+        char surname[100];
+
+        printf("Bienvenue sur votre agenda collaboratif.\n");
+        printf("Dans un premier temps, renseignez votre nom et votre prénom (sous la forme 'nom_prenom'):\n");
+
+        scanf("%s", fileName);
+
+        // Utilisation de sscanf pour extraire le nom et le prénom de fileName
+        if (sscanf(fileName, "%[^_]_%s", name, surname) == 2) {
+            // Afficher le nom et le prénom séparément
+            printf("Nom: %s\n", name);
+            printf("Prénom: %s\n", surname);
+        } else {
+            printf("Format incorrect. Assurez-vous d'utiliser la forme 'nom_prenom'.\n");
+        }
+
+        
+
+
+    }
     return 0;
 }
 
