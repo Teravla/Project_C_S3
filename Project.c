@@ -865,52 +865,57 @@ int main() {
             return 1;
     }
 
-    printf("La liste precedente est a present affichee. Maintenant, vous pouvez utiliser les quelques fonctionnalites suivantes :\n");
-    printf("0. Ajouter un element\n");
-    printf("1. Supprimer un element\n");
-    printf("2. Rechercher un element\n");
-    printf("3. Afficher un seul niveau\n");
-
     do {
-        printf("Voulez-vous utiliser ces fonctionnalites? (1 ou 0) : ");
-        scanf("%d", &optionFonctionalityChoice);
-    } while (optionFonctionalityChoice < 0 || optionFonctionalityChoice > 1);
+        printf("\nLa liste precedente est a present affichee. Maintenant, vous pouvez utiliser les quelques fonctionnalites suivantes :\n");
+        printf("Vous pouvez choisir entre trois options:\n");
 
-    if (optionFonctionalityChoice == 1) {
-        printf("Choississez la fonctionnalite (0, 1, 2 ou 3) : \n");
+        printf("0. Ajouter un element\n");
+        printf("1. Supprimer un element\n");
+        printf("2. Rechercher un element\n");
+        printf("3. Afficher un seul niveau\n");
 
         do {
-            printf("Votre choix : ");
-            scanf("%d", &optionFonctionality);
-        } while (optionFonctionality < 0 || optionFonctionality > 3);
+            printf("Voulez-vous utiliser ces fonctionnalites? (1 pour Oui, 0 pour Non) : ");
+            scanf("%d", &optionFonctionalityChoice);
+        } while (optionFonctionalityChoice < 0 || optionFonctionalityChoice > 1);
 
-        switch (optionFonctionality)
-        {
-        case 0:
-            addCell(myList);
-            break;
-        case 1:
-            deleteCell(myList);
-            break;
-        case 2:
-            searchCell(myList);
-            break;
-        case 3:
-            printOneLevel(myList);
-            break;
-        default:
-            printf("Error code 'main-02-02', contact admin.\n");
-            break;
+        if (optionFonctionalityChoice == 1) {
+            printf("Choississez la fonctionnalite (0 pour Ajouter, 1 pour Supprimer, 2 pour Rechercher, 3 pour Afficher un seul niveau) : \n");
+
+            do {
+                printf("Votre choix : ");
+                scanf("%d", &optionFonctionality);
+            } while (optionFonctionality < 0 || optionFonctionality > 3);
+
+            switch (optionFonctionality) {
+                case 0:
+                    addCell(myList);
+                    break;
+                case 1:
+                    deleteCell(myList);
+                    break;
+                case 2:
+                    searchCell(myList);
+                    break;
+                case 3:
+                    printOneLevel(myList);
+                    break;
+                default:
+                    printf("Error code 'main-02-02', contact admin.\n");
+                    break;
+            }
+
+        } else if (optionFonctionalityChoice == 0) {
+            printf("Retour au menu principal.\n");
+
+        } else {
+            printf("Error code 'main-02-01', contact admin.\n");
+            return 1;
         }
 
-
-        // Implementez vos fonctionnalites ici
-    } else if (optionFonctionalityChoice == 0) {
-        main();  // Recommencer le programme
-    } else {
-        printf("Error code 'main-02-01', contact admin.\n");
-        return 1;
-    }
+    } while (optionFonctionalityChoice == 1);
 
     return 0;
 }
+
+
