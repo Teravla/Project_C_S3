@@ -22,14 +22,19 @@ typedef struct {
 
 // Function declarations
 int countCells(LevelList* list);
-int CountCaracterInBelowLevels(LevelList* list, int level);
+int CountCaracterInBelowLevels(LevelList* list, int columnToCount);
+int numberCaracterInCell(LevelList* list, int column);
+int countCharPreviousCell(LevelList* list, int column);
+int nbCharPreviousCells(LevelList* list, int column);
 Cell* createCell(int value, int levels);
+int CountColumn(LevelList* list, int column);
 LevelList* createLevelList(int maxLevels);
+int SumCharLenght(int* array, int size);
 void insertAtHead(LevelList* list, Cell* newCell);
 int maxColumns(LevelList* list);
 void assignColumnIndices(LevelList* list, int numberOfCells);
-void printLevel(LevelList* list, int level);
-void printAllLevels(LevelList* list);
+void printLevel(LevelList* list, int level, int numberOfCells);
+void printAllLevels(LevelList* list, int numberOfCells);
 
 // Generation aleatoire
 LevelList* createRandomLevelList(int numLevels);

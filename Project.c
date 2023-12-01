@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
 #include "Project.h"
 
-#define CHAR_CELL 20
+#define CHAR_CELL 18
 
 
 
@@ -144,62 +145,253 @@ void assignColumnIndices(LevelList* list, int numberOfCells) {
 }
 
 
-int CountCaracterInBelowLevels(LevelList* list, int level) {
+int CountCaracterInBelowLevels(LevelList* list, int columnToCount) {
     int count = 0;
 
-    // Vérifie chaque niveau en dessous de level
-    for (int i = 0; i < level; i++) {
-        Cell* current = list->head->next[i];
+    if (list->head == NULL) {
+        // Liste vide
+        return 0;
+    }
 
-        // Parcours les cellules au niveau i
-        while (current != NULL) {
-            
-            int value = current->value;
+    Cell* current = list->head->next[0]; // Pointe vers la première cellule du niveau 0
 
-            // Calcule le nombre de caractères dans la valeur de la cellule
-            int numDigits = 0;
-            while (value%10 >= 1) {
-                value /= 10;
-                numDigits++;
+    // Parcours les cellules du niveau 0 jusqu'à la colonne spécifiée
+    while (current != NULL && current->column <= columnToCount) {
+        int value = current->value;
+
+        // Calcule le nombre de caractères dans la valeur de la cellule
+        int numDigits = 0;
+        do {
+            value /= 10;
+            numDigits++;
+        } while (value != 0);
+
+        // Incrémente count en fonction du nombre de caractères
+        count += numDigits;
+
+        current = current->next[0]; // Passe à la cellule suivante du niveau 0
+    }
+
+    return count;
+}
+
+int CountColumn(LevelList* list, int column) {
+    int count = 0;
+
+    if (list->head == NULL) {
+        // Liste vide
+        return 0;
+    }
+
+    Cell* current = list->head->next[0]; // Pointe vers la première cellule du niveau 0
+
+    // Parcours les cellules du niveau 0 jusqu'à la colonne spécifiée
+    while (current != NULL && current->column <= column) {
+        count++; // Incrémente le compteur de colonnes
+        current = current->next[0]; // Passe à la cellule suivante du niveau 0
+    }
+
+    return count;
+}
+
+int numberCaracterInCell(LevelList* list, int column) {
+    if (list->head == NULL) {
+        // Liste vide
+        return 0;
+    }
+
+    Cell* current = list->head->next[0]; // Pointe vers la première cellule du niveau 0
+
+    // Parcours les cellules du niveau 0 jusqu'à la colonne spécifiée
+    while (current != NULL && current->column != column) {
+        current = current->next[0]; // Passe à la cellule suivante du niveau 0
+    }
+
+    if (current != NULL) {
+        int value = current->value;
+
+        // Calcule le nombre de caractères dans la valeur de la cellule
+        int count = 0;
+        do {
+            value /= 10;
+            count++;
+        } while (value != 0);
+
+        return count;
+    } else {
+        // La colonne spécifiée n'existe pas dans le niveau 0
+        return 0;
+    }
+}
+
+int nbCharPreviousCells(LevelList* list, int column) {
+    int totalCharCount = 0;
+
+    // Recherche de toutes les cellules précédentes au niveau 0
+    Cell* current = list->head->next[0];
+    while (current != NULL) {
+        if (current->column < column) {
+            // La cellule précédente a été trouvée
+            int prevValue = current->value;
+
+            // Calcul du nombre de caractères dans la valeur de la cellule précédente
+            while (prevValue > 0) {
+                prevValue /= 10;
+                totalCharCount++;
+            }
+        }
+
+        current = current->next[0];
+    }
+
+    return totalCharCount;
+}
+
+
+int countCharPreviousCell(LevelList* list, int column) {
+    int charCount = 0;
+
+    // Recherche de la cellule précédente au niveau 0
+    Cell* current = list->head->next[0];
+    while (current != NULL) {
+        if (current->column == column - 1) {
+            // La cellule précédente a été trouvée
+            int prevValue = current->value;
+
+            // Calcul du nombre de caractères dans la valeur de la cellule précédente
+            while (prevValue > 0) {
+                prevValue /= 10;
+                charCount++;
             }
 
-            // Incrémente count en fonction du nombre de caractères
-            count = (numDigits + 1);
-
-            current = current->next[i];
+            break;
         }
+
+        current = current->next[0];
     }
-    
-    return count;
+
+    return charCount;
+}
+
+void printArray(int* array, int size) {
+    printf("[ ");
+    for (int i = 0; i < size; i++) {
+        printf("%d ", array[i]);
+    }
+    printf("]");
+}
+
+int SumCharLenght(int* array, int size) {
+    int sum = 0;
+    for (int i = 0; i < size; i++) {
+        sum += array[i];
+    }
+
+    return sum;
+}
+
+int tabcharlength(LevelList* list, int column) {
+    Cell* current = list->head->next[0];
+
+    // Nombre total de colonnes dans la liste
+    int totalColumns = 0;
+    while (current != NULL) {
+        totalColumns++;
+        current = current->next[0];
+    }
+
+    // Création du tableau pour stocker les longueurs des caractères
+    int* charLengths = (int*)malloc(totalColumns * sizeof(int));
+    if (charLengths == NULL) {
+        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        exit(EXIT_FAILURE);
+    }
+
+    current = list->head->next[0];
+    int index = 0;
+
+    while (current != NULL && current->column <= column) {
+        int value = current->value;
+
+        // Calcul du nombre de caractères dans la valeur de la cellule
+        int numDigits = 0;
+        while (value > 0) {
+            value /= 10;
+            numDigits++;
+        }
+
+        charLengths[index] = numDigits;
+        index++;
+
+        current = current->next[0];
+    }
+
+    // Affichage du tableau
+    //printArray(charLengths, index);
+    int sum = SumCharLenght(charLengths, index);
+    //printf("%d", sum);
+
+    free(charLengths);
+
+
+    return sum;
 }
 
 
 
-void printLevel(LevelList* list, int level) {
-    printf("[ list head_%d | @ - ] --", level);
+void printLevel(LevelList* list, int level, int numberOfCells) {
+    printf("[ list head_%d | @ - ] __", level);
 
     Cell* current = list->head->next[level];
+    int char_cell = 18;
+    
     int maxCols = maxColumns(list);
-
-    int numberCaracterInBelowLevels = CountCaracterInBelowLevels(list, level);
+    int* distinctValues = malloc(numberOfCells * sizeof(int));
+    if (distinctValues == NULL) {
+        fprintf(stderr, "Erreur d'allocation mémoire\n");
+        exit(EXIT_FAILURE);
+    }
 
     if (current == NULL) {
-        //printf("%d", numberCaracterInBelowLevels);
-        for (int i = 0; i < CHAR_CELL * maxCols + numberCaracterInBelowLevels; i++) {
-            printf("-");
+        // Affichage du nombre total de caractères pour chaque colonne
+        for (int k = 0; k < maxCols; k++) {
+            int totalChars = (char_cell + (numberCaracterInCell(list, k) +1));
+            //printf("%d", numberCaracterInCell(list, k));
+
+            // Affichage des tirets
+            for (int i = 0; i < totalChars; i++) {
+                printf("-");
+            }
         }
-        printf("> NULL\n");
+        printf("-> NULL\n");
         return;
     }
+
+
 
     int* printedColumns = (int*)calloc(maxCols, sizeof(int));
     int lastPrinted = -1;
     
-    int char_cell = CHAR_CELL + numberCaracterInBelowLevels;
 
     while (current != NULL) {
+
+        int nbCharLenght = tabcharlength(list, current->column);
+
+        // // Soit numberOfCells valeurs différentes
+        // int nbCharCell = numberCaracterInCell(list, current->column);
+        // distinctValues[current->column] = nbCharCell;
+        // //printf("%d", nbCharCell);
+
+        //int nbCharPreviousCell = countCharPreviousCell(list, current->column);
+        //printf("%d", nbCharPreviousCell);
+
+        
         for (int i = lastPrinted + 1; i < current->column; i++) {
-            for (int j = 0; j < CHAR_CELL; j++) {
+            
+            int nbCharPreviousCell = numberCaracterInCell(list, i);
+            //printf("%d", nbCharPreviousCell);
+
+            for (int j = 0; j < char_cell + nbCharPreviousCell +1 ; j++) {
                 printf("-");
             }
             printedColumns[i] = 1;
@@ -208,14 +400,13 @@ void printLevel(LevelList* list, int level) {
         printf("> [ %d (%d) | @ - ]", current->value, current->column);
 
         if (current->next[level] != NULL && current->next[level]->column != current->column) {
-            printf(" --");
+            printf(" __");
         } else {
             printf(" ");
-            int remainingColumns = maxCols - (current->column + 1);
+            int remainingColumns = maxCols - (current->column +1);
             
             for (int i = 0; i < remainingColumns; i++) {
-                printf("%d", numberCaracterInBelowLevels);
-                for (int j = 0; j < char_cell; j++) {
+                for (int j = 0; j < char_cell ; j++) {
                     printf("-");
                 }
             }
@@ -231,9 +422,9 @@ void printLevel(LevelList* list, int level) {
     free(printedColumns);
 }
 
-void printAllLevels(LevelList* list) {
+void printAllLevels(LevelList* list, int numberOfCells) {
     for (int i = 0; i < list->maxLevels; i++) {
-        printLevel(list, i);
+        printLevel(list, i, numberOfCells);
     }
 }
 
@@ -373,10 +564,10 @@ int main() {
         LevelList* myList = createLevelList(5);
 
         Cell* cell1 = createCell(1, 3);
-        Cell* cell2 = createCell(2, 3);
-        Cell* cell3 = createCell(30, 2);
-        Cell* cell4 = createCell(5, 4);
-        Cell* cell5 = createCell(4, 3);
+        Cell* cell2 = createCell(12, 4);
+        Cell* cell3 = createCell(3, 3);
+        Cell* cell4 = createCell(50, 4);
+        Cell* cell5 = createCell(14, 3);
 
         insertAtHead(myList, cell1);
         insertAtHead(myList, cell2);
@@ -386,11 +577,11 @@ int main() {
 
         int numberOfCells = countCells(myList);
         assignColumnIndices(myList, numberOfCells);
-        printAllLevels(myList);
+        printAllLevels(myList, 5);
         printf("\n");
 
-        int searchValue = 10;  // Modifier la valeur à rechercher
-        compareSearchTimes(myList, searchValue);
+        // int searchValue = 10;  // Modifier la valeur à rechercher
+        // compareSearchTimes(myList, searchValue);
 
         free(myList);  // Liberer la memoire allouee à la fin de la fonction
     } else if (option == 1) {
@@ -437,7 +628,7 @@ int main() {
 
         int numberOfCells = countCells(myList);
         assignColumnIndices(myList, numberOfCells);
-        printAllLevels(myList);
+        printAllLevels(myList, numCells);
 
         int searchValue = 10;  // Modifier la valeur à rechercher
         compareSearchTimes(myList, searchValue);
@@ -470,7 +661,7 @@ int main() {
 
         int numberOfCells = countCells(randomList);
         assignColumnIndices(randomList, numberOfCells);
-        printAllLevels(randomList);
+        printAllLevels(randomList, numRandomValues);
 
         int searchValue = 10;  // Modifier la valeur à rechercher
         compareSearchTimes(randomList, searchValue);
