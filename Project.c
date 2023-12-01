@@ -337,6 +337,17 @@ int tabcharlength(LevelList* list, int column) {
     return sum;
 }
 
+Cell* obtenirCellule(LevelList* list, int column) {
+    Cell* current = list->head->next[0];
+
+    while (current != NULL && current->column != column) {
+        current = current->next[0];
+    }
+
+    return current;
+}
+
+
 
 
 void printLevel(LevelList* list, int level, int numberOfCells) {
@@ -404,12 +415,31 @@ void printLevel(LevelList* list, int level, int numberOfCells) {
         } else {
             printf(" ");
             int remainingColumns = maxCols - (current->column +1);
+            //printf("%d", remainingColumns);
             
-            for (int i = 0; i < remainingColumns; i++) {
-                for (int j = 0; j < char_cell ; j++) {
+            for (int k = 0; k < remainingColumns; k++) {
+                // Obtenez la cellule correspondant à la colonne (fin de la liste - k)
+                Cell* celluleCourante = obtenirCellule(list, maxCols - k - 1);
+                
+                //printf("%d", celluleCourante->column);
+                
+                int nbCharCurrentCell = numberCaracterInCell(list, celluleCourante->column);
+                //printf(" %d", nbCharCurrentCell);
+                int totalChars = char_cell + nbCharCurrentCell+1;
+                
+                // Affichage des tirets
+                for (int i = 0; i < totalChars; i++) {
                     printf("-");
                 }
             }
+
+
+            
+            // for (int i = 0; i < remainingColumns; i++) {
+            //     for (int j = 0; j < char_cell ; j++) {
+            //         printf("-");
+            //     }
+            // }
             printf("---> NULL\n");
             break;
         }
@@ -566,8 +596,8 @@ int main() {
         Cell* cell1 = createCell(1, 3);
         Cell* cell2 = createCell(12, 4);
         Cell* cell3 = createCell(3, 3);
-        Cell* cell4 = createCell(50, 4);
-        Cell* cell5 = createCell(14, 3);
+        Cell* cell4 = createCell(500, 3);
+        Cell* cell5 = createCell(400, 3);
 
         insertAtHead(myList, cell1);
         insertAtHead(myList, cell2);
