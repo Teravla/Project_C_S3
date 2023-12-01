@@ -63,6 +63,10 @@ void compareSearchTimes(LevelList* list, int value);
 //Agenda
 LevelList* addContact(LevelList* myList);
 LevelList* deleteContact(LevelList* myList);
+void searchContact(LevelList* list);
+void searchMeeting(LevelList* list);
+void searchMeetingByDate(LevelList* list);
+void searchMeetingByHour(LevelList* list);
 
 int countCharName(LevelList* list, int column);
 int countCharSurname(LevelList* list, int column);

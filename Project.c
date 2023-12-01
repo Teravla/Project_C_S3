@@ -733,96 +733,116 @@ void fillTableWithRandomValues(LevelList* list, int n) {
 
 
 LevelList* addContact(LevelList* myList) {
+    
+    printf("Vous avez choisi d'ajouter un contact.\n");
+    
     Cell* newCell = createCell(0, 1);
-    int choice;
-
-    printf("Entrer le nom du contact sous la forme (nom_prenom) : ");
-    scanf(" %99[^_]_%99s", newCell->name, newCell->surname);
-
-    // À ce stade, newCell->name et newCell->surname contiennent le nom et le prénom séparés
-    // Inserer la nouvelle cellule dans la liste
-    insertAtHead(myList, newCell);
-
-    // Afficher le contenu de la cellule
-    printf("Nom: %s\n", newCell->name);
-    printf("Prenom: %s\n", newCell->surname);
-    printf("Valeur: %d\n", newCell->value);
+    int choiceCount; 
+    int choiceReu;
 
     do {
-        printf("Voulez vous ajouter une reunion ? (1/0) : ");
-        scanf("%d", &choice);
-    } while (choice != 1 && choice != 0);
-    
+        printf("Combien de contacts voulez-vous ajouter?\n");
+        scanf("%d", &choiceCount);
+    } while (choiceCount <= 0);
 
-    if (choice == 1) {
-        printf("Entrer la date de la reunion sous la forme (jour-mois-année) : ");
-        scanf("%d-%d-%d", &newCell->day, &newCell->month, &newCell->year);
+    for (int i; i<choiceCount; i++) {
+        printf("Entrer le nom du contact sous la forme (nom_prenom) : ");
+        scanf(" %99[^_]_%99s", newCell->name, newCell->surname);
 
-        printf("Entrer l'heure de la reunion sous la forme (heure:minute:seconde) : ");
-        scanf("%d:%d:%d", &newCell->hour, &newCell->minute, &newCell->second);
-    } else {
-        newCell->day = 0;
-        newCell->month = 0;
-        newCell->year = 0;
-        newCell->hour = 0;
-        newCell->minute = 0;
-        newCell->second = 0;
+        // À ce stade, newCell->name et newCell->surname contiennent le nom et le prénom séparés
+        // Inserer la nouvelle cellule dans la liste
+        insertAtHead(myList, newCell);
+
+        // Afficher le contenu de la cellule
+        printf("Nom: %s\n", newCell->name);
+        printf("Prenom: %s\n", newCell->surname);
+        printf("Valeur: %d\n", newCell->value);
+
+        do {
+            printf("Voulez vous ajouter une reunion ? (1/0) : ");
+            scanf("%d", &choiceReu);
+        } while (choiceReu != 1 && choiceReu != 0);
+        
+
+        if (choiceReu == 1) {
+            printf("Entrer la date de la reunion sous la forme (jour-mois-année) : ");
+            scanf("%d-%d-%d", &newCell->day, &newCell->month, &newCell->year);
+
+            printf("Entrer l'heure de la reunion sous la forme (heure:minute:seconde) : ");
+            scanf("%d:%d:%d", &newCell->hour, &newCell->minute, &newCell->second);
+        } else {
+            newCell->day = 0;
+            newCell->month = 0;
+            newCell->year = 0;
+            newCell->hour = 0;
+            newCell->minute = 0;
+            newCell->second = 0;
+        }
     }
-
 
     return myList;
 }
 
 
 LevelList* deleteContact(LevelList* myList) {
-    char nameToDelete[100];
-
+    
     printf("Vous avez choisi de supprimer un contact.\n");
 
-    // Boucle do-while pour la saisie sécurisée
+    char nameToDelete[100];
+    int choiceCount;
+
     do {
-        printf("Veuillez choisir le nom du contact : ");
-        if (scanf("%99s", nameToDelete) != 1) {
-            printf("Erreur de saisie. Veuillez réessayer.\n");
-            // Effacer le tampon d'entrée en cas d'erreur
-            while (getchar() != '\n');
-            continue;
-        }
+        printf("Combien de contacts voulez-vous supprimer?\n");
+        scanf("%d", &choiceCount);
+    } while (choiceCount <= 0);
 
-        // Sortir de la boucle si la saisie est correcte
-        break;
+    for (int i; i<choiceCount; i++) {
 
-    } while (1);
-
-    // Recherche du contact dans la liste
-    Cell* current = myList->head;
-    Cell* prev = NULL;
-
-
-    while (current != NULL) {
-        // Comparer le nom du contact avec celui saisi
-        if (strcmp(current->name, nameToDelete) == 0) {
-            // La cellule correspondante a été trouvée, supprimer la cellule
-            if (prev != NULL) {
-                prev->next[0] = current->next[0];
-            } else {
-                myList->head = current->next[0];
+        // Boucle do-while pour la saisie sécurisée
+        do {
+            printf("Veuillez choisir le nom du contact : ");
+            if (scanf("%99s", nameToDelete) != 1) {
+                printf("Erreur de saisie. Veuillez réessayer.\n");
+                // Effacer le tampon d'entrée en cas d'erreur
+                while (getchar() != '\n');
+                continue;
             }
 
-            free(current);  // Libérer la mémoire de la cellule à supprimer
-            printf("Contact supprime avec succes.\n");
+            // Sortir de la boucle si la saisie est correcte
             break;
+
+        } while (1);
+
+        // Recherche du contact dans la liste
+        Cell* current = myList->head;
+        Cell* prev = NULL;
+
+
+        while (current != NULL) {
+            // Comparer le nom du contact avec celui saisi
+            if (strcmp(current->name, nameToDelete) == 0) {
+                // La cellule correspondante a été trouvée, supprimer la cellule
+                if (prev != NULL) {
+                    prev->next[0] = current->next[0];
+                } else {
+                    myList->head = current->next[0];
+                }
+
+                free(current);  // Libérer la mémoire de la cellule à supprimer
+                printf("Contact supprime avec succes.\n");
+                break;
+            }
+
+            prev = current;
+            current = current->next[0];
         }
 
-        prev = current;
-        current = current->next[0];
-    }
+        // Afficher un message si le contact n'a pas été trouvé
+        if (current == NULL) {
+            printf("Contact non trouve dans la liste.\n");
+        }
 
-    // Afficher un message si le contact n'a pas été trouvé
-    if (current == NULL) {
-        printf("Contact non trouve dans la liste.\n");
     }
-
     return myList;
 }
 
@@ -871,7 +891,131 @@ void capitalizeString(char* str) {
     }
 }
 
+void searchContact(LevelList* list) {
+    char searchName[100];
+
+    printf("Vous avez choisi de rechercher un contact.\n");
+
+    // Boucle do-while pour la saisie sécurisée
+    do {
+        printf("Veuillez choisir le nom ou le prénom du contact : ");
+        if (scanf("%99s", searchName) != 1) {
+            printf("Erreur de saisie. Veuillez réessayer.\n");
+            // Effacer le tampon d'entrée en cas d'erreur
+            while (getchar() != '\n');
+            continue;
+        }
+
+        // Sortir de la boucle si la saisie est correcte
+        break;
+    } while (1);
+
+    // Recherche du contact dans la liste
+    Cell* current = list->head;
+
+    while (current != NULL) {
+        // Comparer le nom ou le prénom du contact avec la saisie
+        if (strcmp(current->name, searchName) == 0 || strcmp(current->surname, searchName) == 0) {
+            // Afficher les informations du contact
+            printf("Contact trouvé :\n");
+            printf("Nom : %s\n", current->name);
+            printf("Prénom : %s\n", current->surname);
+            printf("Nombre de réunions (niveau) : %d\n", current->levels);
+
+            // Afficher les heures de réunion
+            for (int i = 0; i < current->levels; ++i) {
+                printf("Réunion %d : %02d-%02d-%04d %02dh%02d:%02d\n", i + 1, current->day, current->month, current->year, current->hour, current->minute, current->second);
+            }
+
+            return;  // Sortir de la fonction après avoir trouvé le contact
+        }
+
+        current = current->next[0];
+    }
+
+    // Afficher un message si le contact n'a pas été trouvé
+    printf("Contact non trouvé dans la liste.\n");
+}
+
+
+void searchMeeting(LevelList* list) {
+    int searchChoice;
+
+    printf("Vous avez choisi de rechercher une réunion.\n");
+
+    // Demander à l'utilisateur de choisir entre la recherche par date ou par heure
+    do {
+        printf("Choisissez le type de recherche :\n");
+        printf("1. Par date\n");
+        printf("2. Par heure\n");
+        printf("Votre choix : ");
+        scanf("%d", &searchChoice);
+    } while (searchChoice < 1 || searchChoice > 2);
+
+    switch (searchChoice) {
+        case 1:
+            // Recherche par date
+            searchMeetingByDate(list);
+            break;
+        case 2:
+            // Recherche par heure
+            searchMeetingByHour(list);
+            break;
+        default:
+            printf("Choix invalide.\n");
+            break;
+    }
+}
+
+void searchMeetingByDate(LevelList* list) {
+    int searchDay, searchMonth, searchYear;
+
+    printf("Veuillez entrer la date de la réunion (jj mm aaaa) : ");
+    scanf("%d %d %d", &searchDay, &searchMonth, &searchYear);
+
+    // Parcourir la liste et afficher les réunions à la date donnée
+    Cell* current = list->head;
+
+    while (current != NULL) {
+        if (current->day == searchDay && current->month == searchMonth && current->year == searchYear) {
+            printf("Réunion trouvée :\n");
+            printf("Nom : %s\n", current->name);
+            printf("Prénom : %s\n", current->surname);
+            printf("Date : %02d-%02d-%04d\n", current->day, current->month, current->year);
+            printf("Heure : %02dh%02d:%02d\n", current->hour, current->minute, current->second);
+            printf("\n");
+        }
+        current = current->next[0];
+    }
+}
+
+void searchMeetingByHour(LevelList* list) {
+    int searchHour, searchMinute;
+
+    printf("Veuillez entrer l'heure de la réunion (hh mm) : ");
+    scanf("%d %d", &searchHour, &searchMinute);
+
+    // Parcourir la liste et afficher les réunions à l'heure donnée
+    Cell* current = list->head;
+
+    while (current != NULL) {
+        if (current->hour == searchHour && current->minute == searchMinute) {
+            printf("Réunion trouvée :\n");
+            printf("Nom : %s\n", current->name);
+            printf("Prénom : %s\n", current->surname);
+            printf("Date : %02d-%02d-%04d\n", current->day, current->month, current->year);
+            printf("Heure : %02dh%02d:%02d\n", current->hour, current->minute, current->second);
+            printf("\n");
+        }
+        current = current->next[0];
+    }
+}
+
+
+
+
 //Affichage 
+
 void printLevelChar(LevelList* list, int level, int numberOfCells) {
     printf("[ list head_%d | @ - ] --", level);
 
@@ -1137,13 +1281,13 @@ int main() {
                 printAllLevelsChar(myList, numberOfCell);
                 break;
             case 3:
-                //searchContact(myList);
+                searchContact(myList);
                 break;
             case 4:
-                //searchMeeting(myList);
+                searchMeeting(myList);
                 break;
             case 5:
-                //addMeeting(myList);
+                addMeeting(myList);
                 break;
             default:
                 break;
