@@ -81,6 +81,7 @@ SearchResult searchAllLevels(LevelList* list, int value); // Correction ici
 void compareSearchTimes(LevelList* list, int value);
 
 //Agenda
+void insertMeeting(Node** meetings, Meeting* newMeeting);
 LevelAgenda* addContact(LevelAgenda* myList);
 LevelAgenda* deleteContact(LevelAgenda* myList);
 void searchContact(LevelAgenda* list);
@@ -93,10 +94,15 @@ int meetingExists(LevelAgenda* list, Agenda* meeting);
 int countCharName(LevelAgenda* list, int column);
 int countCharSurname(LevelAgenda* list, int column);
 void capitalizeString(char* str);
-void insertAtHeadChar(LevelList* list, Cell* newCell);
+void insertAtHeadAgenda(LevelAgenda* list, Agenda* newAgenda);
+LevelAgenda* createLevelAgenda(int maxLevels);
+int countCellsAgenda(LevelAgenda* list);
+void assignColumnIndicesAgenda(LevelAgenda* list, int numberOfCells);
 
+int maxColumnsAgenda(LevelAgenda* list);
+Agenda* obtenirCelluleAgenda(LevelAgenda* list, int column);
+void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells);
 void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells);
-void printAllLevelsChar(LevelList* list, int numberOfCells);
 
 //Main
 LevelList* listPreset();
