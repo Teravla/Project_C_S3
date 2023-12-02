@@ -732,54 +732,66 @@ void fillTableWithRandomValues(LevelList* list, int n) {
 
 //Generation 
 
-Agenda* createCellAgenda(const char* name, const char* surname, int levels) {
+Agenda* createCellAgenda(const char* name, const char* surname, int day, int month, int year, int hour, int minute, int second) {
+    // Créer une nouvelle cellule Agenda
     Agenda* newCell = (Agenda*)malloc(sizeof(Agenda));
-    
     if (newCell == NULL) {
         fprintf(stderr, "Erreur d'allocation mémoire pour la cellule Agenda\n");
         exit(EXIT_FAILURE);
     }
 
+    printf("\nTest1 pass");
+
+    // Copier le nom et le prénom dans la nouvelle cellule
     strncpy(newCell->name, name, sizeof(newCell->name) - 1);
-    newCell->name[sizeof(newCell->name) - 1] = '\0';  // Assurer la null-termination
-
     strncpy(newCell->surname, surname, sizeof(newCell->surname) - 1);
-    newCell->surname[sizeof(newCell->surname) - 1] = '\0';  // Assurer la null-termination
 
-    newCell->level = 0;
-    newCell->column = 0;
+    printf("\nTest2 pass");
 
-    newCell->meetings = NULL; // Initialiser la liste chaînée de réunions à NULL
+    // Initialiser les autres champs de la cellule
+    newCell->meetings = NULL;
+    newCell->level = 1; // Initialiser level à 1 par défaut
 
-    newCell->next = (Agenda**)malloc(levels * sizeof(Agenda*));
-
-    if (newCell->next == NULL) {
-        fprintf(stderr, "Erreur d'allocation mémoire pour les niveaux de la cellule Agenda\n");
+    // Créer une nouvelle réunion et l'ajouter à la liste des réunions de la cellule
+    Meeting* newMeeting = (Meeting*)malloc(sizeof(Meeting));
+    if (newMeeting == NULL) {
+        fprintf(stderr, "Erreur d'allocation mémoire pour la réunion\n");
         exit(EXIT_FAILURE);
     }
 
-    for (int i = 0; i < levels; i++) {
-        newCell->next[i] = NULL;
+    printf("\nTest3 pass");
+
+    newMeeting->day = day;
+    newMeeting->month = month;
+    newMeeting->year = year;
+    newMeeting->hour = hour;
+    newMeeting->minute = minute;
+    newMeeting->second = second;
+
+    printf("\nTest4 pass");
+
+    // Ajouter la réunion à la liste des réunions de la cellule
+    Node* newMeetingNode = (Node*)malloc(sizeof(Node));
+    if (newMeetingNode == NULL) {
+        fprintf(stderr, "Erreur d'allocation mémoire pour le noeud de réunion\n");
+        exit(EXIT_FAILURE);
     }
 
+    printf("\nTest5 pass");
+
+    newMeetingNode->meeting = *newMeeting;
+    newMeetingNode->next = newCell->meetings;
+    newCell->meetings = newMeetingNode;
+
+    printf("\nTest6 pass");
+
+    // Retourner la nouvelle cellule
     return newCell;
 }
 
 
+
 //Fonctionalites
-
-// Fonction pour insérer une réunion dans une liste chaînée de réunions
-void insertMeeting(Node** meetings, Meeting* newMeeting) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    if (newNode == NULL) {
-        fprintf(stderr, "Erreur d'allocation mémoire\n");
-        exit(EXIT_FAILURE);
-    }
-
-    newNode->meeting = *newMeeting;
-    newNode->next = *meetings;
-    *meetings = newNode;
-}
 
 // Fonction pour ajouter un contact avec la possibilité d'ajouter des réunions
 LevelAgenda* addContact(LevelAgenda* myList) {
@@ -794,21 +806,29 @@ LevelAgenda* addContact(LevelAgenda* myList) {
     } while (choiceCount <= 0);
 
     for (int i = 0; i < choiceCount; i++) {
-        Agenda* newAgenda = createCellAgenda("", "", 1);
+
+        char name[100] = "";
+        char surname[100] = "";
+        int day = 0;
+        int month = 0;
+        int year = 0;
+        int hour = 0;
+        int minute = 0;
+        int seconde = 0;
+
 
         printf("Entrer le nom du contact sous la forme (nom_prenom) : ");
-        scanf(" %99[^_]_%99s", newAgenda->name, newAgenda->surname);
+        scanf(" %99[^_]_%99s", name, surname);
 
         // À ce stade, newAgenda->name et newAgenda->surname contiennent le nom et le prenom séparés
         // Inserer la nouvelle cellule dans la liste
-        insertAtHeadAgenda(myList, newAgenda);
 
         // Afficher le contenu de la cellule
-        printf("Nom: %s\n", newAgenda->name);
-        printf("Prenom: %s\n", newAgenda->surname);
+        printf("Nom: %s\n", name);
+        printf("Prenom: %s\n", surname);
 
         do {
-            printf("Voulez-vous ajouter une reunion ? (1/0) : ");
+            printf("Voulez-vous ajouter une reunion pour votre nouveau contact ? (1/0) : ");
             scanf("%d", &choiceReu);
         } while (choiceReu != 1 && choiceReu != 0);
 
@@ -816,24 +836,30 @@ LevelAgenda* addContact(LevelAgenda* myList) {
             Meeting newMeeting;
 
             printf("Entrer la date de la reunion sous la forme (jour-mois-annee) : ");
-            scanf("%d-%d-%d", &newMeeting.day, &newMeeting.month, &newMeeting.year);
+            scanf("%d-%d-%d", day, month, year);
 
             printf("Entrer l'heure de la reunion sous la forme (heure:minute:seconde) : ");
-            scanf("%d:%d:%d", &newMeeting.hour, &newMeeting.minute, &newMeeting.second);
-
-            // Ajouter la réunion à la liste chaînée de réunions dans la cellule
-            insertMeeting(&newAgenda->meetings, &newMeeting);
+            scanf("%d:%d:%d", hour, minute, seconde);
         } else {
-            // Aucune réunion
-            newAgenda->meetings = NULL;
+            day = 0;
+            minute = 0;
+            year = 0;
+            hour = 0;
+            minute = 0;
+            seconde = 0;
         }
+        printf("Votre demande est en cours de traitement");
+        
+        Agenda* newAgenda = createCellAgenda(name, surname, day, month, year, hour, minute, seconde);
+        
+        
+        printf("\nCell Add\n");
+        
+
     }
 
     return myList;
 }
-
-
-
 
 LevelAgenda* deleteContact(LevelAgenda* myList) {
     printf("Vous avez choisi de supprimer un contact.\n");
@@ -920,7 +946,6 @@ int countCharName(LevelAgenda* list, int column) {
     return count;
 }
 
-
 int countCharSurname(LevelAgenda* list, int column) {
     // Initialisation du compteur
     int count = 0;
@@ -938,7 +963,6 @@ int countCharSurname(LevelAgenda* list, int column) {
 
     return count;
 }
-
 
 void capitalizeString(char* str) {
     for (int i = 0; str[i] != '\0'; ++i) {
@@ -993,9 +1017,6 @@ void searchContact(LevelAgenda* list) {
     // Afficher un message si le contact n'a pas été trouvé
     printf("Contact non trouvé dans la liste.\n");
 }
-
-
-
 
 void searchMeeting(LevelAgenda* list) {
     int searchChoice;
@@ -1088,36 +1109,54 @@ void searchMeetingByHour(LevelAgenda* list) {
 LevelAgenda* addMeeting(LevelAgenda* list) {
     printf("Vous avez choisi d'ajouter une reunion.\n");
 
-    // Creer une nouvelle cellule pour la reunion
-    Agenda* newMeeting = createCellAgenda("", "", 1);
+    // Demander à l'utilisateur de choisir un prénom et un nom
+    char name[100];
+    char surname[100];
 
-    // Demander a l'utilisateur de choisir le nom et le prenom de la personne pour la reunion
-    printf("Entrer le nom du participant sous la forme (nom_prenom) : ");
-    scanf("%99[^_]_%99s", newMeeting->name, newMeeting->surname);
+    printf("Entrer le nom du contact : ");
+    scanf(" %99s", name);
 
-    // Demander a l'utilisateur de choisir la date de la reunion
-    printf("Entrer la date de la reunion (jj mm aaaa) : ");
-    scanf("%d %d %d", &newMeeting->meetings->meeting.day, &newMeeting->meetings->meeting.month, &newMeeting->meetings->meeting.year);
+    printf("Entrer le prenom du contact : ");
+    scanf(" %99s", surname);
 
-    // Demander a l'utilisateur de choisir l'heure de la reunion
-    printf("Entrer l'heure de la reunion (hh mm) : ");
-    scanf("%d %d", &newMeeting->meetings->meeting.hour, &newMeeting->meetings->meeting.minute);
-
-    // Verifier si la reunion n'existe pas deja pour eviter les doublons
-    if (meetingExists(list, newMeeting)) {
-        printf("Cette reunion existe deja.\n");
-        free(newMeeting);  // Liberer la memoire de la nouvelle cellule
-        return list;       // Retourner la liste inchangee
+    // Rechercher le contact dans la liste
+    Agenda* current = list->head;
+    while (current->next[0] != NULL && (strcmp(current->next[0]->name, name) != 0 || strcmp(current->next[0]->surname, surname) != 0)) {
+        current = current->next[0];
     }
 
-    // Ajouter la nouvelle reunion comme un nouveau level dans la cellule correspondante
-    insertAtHeadAgenda(list, newMeeting);
+    if (current->next[0] != NULL) {
+        // Le contact existe, demander les détails de la réunion
+        int day, month, year, hour, minute, second;
 
-    printf("Reunion ajoutee avec succes.\n");
+        printf("Entrer le jour de la reunion : ");
+        scanf("%d", &day);
+
+        printf("Entrer le mois de la reunion : ");
+        scanf("%d", &month);
+
+        printf("Entrer l'annee de la reunion : ");
+        scanf("%d", &year);
+
+        printf("Entrer l'heure de la reunion : ");
+        scanf("%d", &hour);
+
+        printf("Entrer la minute de la reunion : ");
+        scanf("%d", &minute);
+
+        printf("Entrer la seconde de la reunion : ");
+        scanf("%d", &second);
+
+        // Ajouter la réunion à la liste des réunions du contact
+        current->next[0] = createCellAgenda(name, surname, day, month, year, hour, minute, second);
+        printf("Reunion ajoutee avec succes.\n");
+    } else {
+        // Le contact n'existe pas
+        printf("Le contact avec le nom '%s' et le prenom '%s' n'existe pas.\n", name, surname);
+    }
 
     return list;
 }
-
 
 
 // Fonction pour vérifier si une réunion existe déjà
@@ -1208,20 +1247,18 @@ Agenda* obtenirCelluleAgenda(LevelAgenda* list, int column) {
 
 
 
-void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
+void printLevelAgenda(LevelAgenda* list, int level) {
     printf("[ list head_%d | @ - ] --", level);
 
     Agenda* current = list->head->next[level];
     int char_cell = 42;
 
     int maxCols = maxColumnsAgenda(list);
-    int* distinctValues = malloc(numberOfCells * sizeof(int));
-    if (distinctValues == NULL) {
-        fprintf(stderr, "Erreur d'allocation memoire\n");
-        exit(EXIT_FAILURE);
-    }
 
-    if (list->head->name[0] == '\0') {
+    if (list->head->name[0] == '\0' && QUE IL N'Y A QUE UNE CELLULE DANS AGENDA (PAS DE CELLULE APRES)) {
+        
+        CODE CHATGTP
+        
         // Le nom est vide
         printf("-> NULL\n");
     } else if (list->head->next[level] == NULL) {
@@ -1292,10 +1329,10 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
 }
 
 
-void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
+void printAllLevelsAgenda(LevelAgenda* list) {
     printf("\n");
     for (int i = 0; i < list->maxLevels; i++) {
-        printLevelAgenda(list, i, numberOfCells);
+        printLevelAgenda(list, i);
     }
 }
 
@@ -1375,6 +1412,7 @@ void insertAtHeadAgenda(LevelAgenda* list, Agenda* newAgenda) {
         current->next[i] = newAgenda;
     }
 }
+
 
 
 
@@ -1521,7 +1559,7 @@ int main() {
 
                     int numberOfCells = countCellsAgenda(myList); // À définir : appeler une fonction pour obtenir le nombre de cellules
                     assignColumnIndicesAgenda(myList, numberOfCells);
-                    printAllLevelsAgenda(myList, numberOfCells);
+                    printAllLevelsAgenda(myList);
                     break;
                 case 2:
                     myList = deleteContact(myList);
