@@ -785,6 +785,7 @@ Agenda* createCellAgenda(const char* name, const char* surname, int day, int mon
 
     printf("\nTest6 pass");
 
+
     // Retourner la nouvelle cellule
     return newCell;
 }
@@ -851,6 +852,8 @@ LevelAgenda* addContact(LevelAgenda* myList) {
         printf("Votre demande est en cours de traitement");
         
         Agenda* newAgenda = createCellAgenda(name, surname, day, month, year, hour, minute, seconde);
+
+        insertAtHeadAgenda(myList, newAgenda);
         
         
         printf("\nCell Add\n");
@@ -1202,17 +1205,16 @@ void assignColumnIndicesAgenda(LevelAgenda* list, int numberOfCells) {
 // Fonction pour compter le nombre de cellules dans une liste d'agenda
 int countCellsAgenda(LevelAgenda* list) {
     int count = 0;
-
-    Agenda* current = list->head->next[0];  // Utilisez le niveau 0
+    Agenda* current = list->head;
 
     while (current != NULL) {
         count++;
         current = current->next[0];
     }
 
-    printf("Le nombre est : %d", count);
     return count;
 }
+
 
 
 
@@ -1247,7 +1249,7 @@ Agenda* obtenirCelluleAgenda(LevelAgenda* list, int column) {
 
 
 
-void printLevelAgenda(LevelAgenda* list, int level) {
+void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
     printf("[ list head_%d | @ - ] --", level);
 
     Agenda* current = list->head->next[level];
@@ -1255,13 +1257,12 @@ void printLevelAgenda(LevelAgenda* list, int level) {
 
     int maxCols = maxColumnsAgenda(list);
 
-    if (list->head->name[0] == '\0' && QUE IL N'Y A QUE UNE CELLULE DANS AGENDA (PAS DE CELLULE APRES)) {
-        
-        CODE CHATGTP
-        
+    if (numberOfCells == 0) {
+        printf("on est ici : liste vide");
         // Le nom est vide
         printf("-> NULL\n");
-    } else if (list->head->next[level] == NULL) {
+    } else SI LE NIVEA {
+        printf("on est ici : liste non vide");
         printf("%d", countCharName(list, 0) + countCharSurname(list, 0));
         // Affichage du nombre total de caracteres pour chaque colonne
         for (int k = 0; k < maxCols; k++) {
@@ -1312,7 +1313,7 @@ void printLevelAgenda(LevelAgenda* list, int level) {
                 int totalChars = char_cell + nbCharCurrentCell;
 
                 // Affichage des tirets
-                for (int i = 0; i < totalChars; i++) {
+                for (int i = 0; i < totalChars ; i++) {
                     printf("-");
                 }
             }
@@ -1329,10 +1330,10 @@ void printLevelAgenda(LevelAgenda* list, int level) {
 }
 
 
-void printAllLevelsAgenda(LevelAgenda* list) {
+void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
     printf("\n");
     for (int i = 0; i < list->maxLevels; i++) {
-        printLevelAgenda(list, i);
+        printLevelAgenda(list, i, numberOfCells);
     }
 }
 
@@ -1382,35 +1383,49 @@ void insertAtHeadAgenda(LevelAgenda* list, Agenda* newAgenda) {
     if (newAgendaLevels > maxLevels) {
         LevelAgenda* extendedList = createLevelAgenda(newAgendaLevels);
 
+        // Copie des données nécessaires de la liste d'origine à la nouvelle liste
         for (int i = 0; i < maxLevels; i++) {
             Agenda* current = list->head;
             while (current != NULL) {
                 Agenda* next = current->next[i];
-                insertAtHeadAgenda(extendedList, current);
+
+                // Création d'une nouvelle cellule et copie des données
+                Agenda* newCell = createCellAgenda(current->name, current->surname,
+                                                    current->meetings->meeting.day, current->meetings->meeting.month,
+                                                    current->meetings->meeting.year, current->meetings->meeting.hour,
+                                                    current->meetings->meeting.minute, current->meetings->meeting.second);
+
+                // Insertion dans la nouvelle liste
+                insertAtHeadAgenda(extendedList, newCell);
+
                 current = next;
             }
         }
 
-        free(list->head);
+        // Libération de la mémoire de la liste d'origine après la copie
         free(list);
-        *list = *extendedList;
+        list = extendedList;
         maxLevels = newAgendaLevels; // Mise à jour du nombre maximal de niveaux
     }
 
-    for (int i = 0; i < newAgendaLevels; i++) {
-        Agenda* current = list->head;
-        while (current->next[i] != NULL && current->next[i]->column < newAgenda->column) {
-            current = current->next[i];
-        }
+    printf("\nInsertAtHeadAgenda test1 passed\n");
 
-        if (current->next[i] != NULL && current->next[i]->column == newAgenda->column) {
-            printf("Duplicate column detected. Cannot insert.\n");
-            return;
-        }
+    // for (int i = 0; i < newAgendaLevels; i++) {
+    //     Agenda* current = list->head;
+    //     while (current->next[i] != NULL && current->next[i]->column < newAgenda->column) {
+    //         current = current->next[i];
+    //     }
 
-        newAgenda->next[i] = current->next[i];
-        current->next[i] = newAgenda;
-    }
+    //     if (current->next[i] != NULL && current->next[i]->column == newAgenda->column) {
+    //         printf("Duplicate column detected. Cannot insert.\n");
+    //         return;
+    //     }
+
+    //     newAgenda->next[i] = current->next[i];
+    //     current->next[i] = newAgenda;
+    // }
+
+    printf("\nInsertAtHeadAgenda : Insertion effectuee avec succes.\n");
 }
 
 
@@ -1558,15 +1573,16 @@ int main() {
                     printf("Affichage de votre agenda : \n");
 
                     int numberOfCells = countCellsAgenda(myList); // À définir : appeler une fonction pour obtenir le nombre de cellules
+                    printf("Number of cells : %d\n", numberOfCells);
                     assignColumnIndicesAgenda(myList, numberOfCells);
-                    printAllLevelsAgenda(myList);
+                    printAllLevelsAgenda(myList, numberOfCells);
                     break;
                 case 2:
                     myList = deleteContact(myList);
 
                     int numberOfCell = countCellsAgenda(myList); // À définir : appeler une fonction pour obtenir le nombre de cellules
                     assignColumnIndicesAgenda(myList, numberOfCell);
-                    printAllLevelsAgenda(myList, numberOfCell);
+                    printAllLevelsAgenda(myList, numberOfCells);
                     break;
                 case 3:
                     searchContact(myList);
@@ -1579,7 +1595,7 @@ int main() {
 
                     int numberOfCellss = countCellsAgenda(myList); // À définir : appeler une fonction pour obtenir le nombre de cellules
                     assignColumnIndicesAgenda(myList, numberOfCellss);
-                    printAllLevelsAgenda(myList, numberOfCellss);
+                    printAllLevelsAgenda(myList, numberOfCells);
                     break;
                 case 6:
                     printf("Affichage de votre agenda : \n");
@@ -1587,7 +1603,7 @@ int main() {
                     int numberOfCellsss = countCellsAgenda(myList);
                     printf(" %d", numberOfCellsss);
                     assignColumnIndicesAgenda(myList, numberOfCellsss);
-                    printAllLevelsAgenda(myList, numberOfCellsss);
+                    printAllLevelsAgenda(myList, numberOfCells);
                     break;
                 default:
                     break;

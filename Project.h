@@ -101,8 +101,8 @@ void assignColumnIndicesAgenda(LevelAgenda* list, int numberOfCells);
 
 int maxColumnsAgenda(LevelAgenda* list);
 Agenda* obtenirCelluleAgenda(LevelAgenda* list, int column);
-void printAllLevelsAgenda(LevelAgenda* list);
-void printLevelAgenda(LevelAgenda* list, int level);
+void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells);
+void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells);
 
 //Main
 LevelList* listPreset();
