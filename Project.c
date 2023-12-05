@@ -880,6 +880,8 @@ int main() {
                     break;
                 case 5:
                     addMeeting(myList);
+                    int numberOfCellsssss = countCellsAgenda(myList);
+                    printAllLevelsAgenda(myList, numberOfCellsssss);
                     break;
                 case 6:
                     printf("Cette fonctionnalite n'est pas encore disponible.\n");

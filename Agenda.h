@@ -10,6 +10,7 @@ typedef struct Meeting {
     int hour;
     int minute;
     int second;
+    int level;
 } Meeting;
 
 // Définition de la structure du nœud de réunion
@@ -43,7 +44,7 @@ typedef struct LevelAgenda {
 //Creation de l'Agenda
 LevelAgenda* createLevelAgenda(int maxLevels);
 Agenda* createCellAgenda(const char* name, const char* surname, int column);
-MeetingNode* createMeeting(int day, int month, int year, int hour, int minute, int second);
+MeetingNode* createMeeting(int day, int month, int year, int hour, int minute, int second, int level);
 
 
 //Gestion des contacts
@@ -63,10 +64,14 @@ void searchMeeting(LevelAgenda* list);
 void searchMeetingByDate(LevelAgenda* list);
 void searchMeetingByHour(LevelAgenda* list);
 
+// Sorting 
+
+void swap(Agenda* a, Agenda* b);
+LevelAgenda* sortAgenda(LevelAgenda* list);
 
 //Affichage
-int countCharName(LevelAgenda* list, int column);
-int countCharSurname(LevelAgenda* list, int column);
+int countCharName(LevelAgenda* list, Agenda* contact);
+int countCharSurname(LevelAgenda* list, Agenda* contact);
 void capitalizeString(char* str);
 int countCellsAgenda(LevelAgenda* list);
 void assignColumnIndicesAgenda(LevelAgenda* list, int numberOfCells);

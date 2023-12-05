@@ -57,7 +57,7 @@ Agenda* createCellAgenda(const char* name, const char* surname, int column) {
 }
 
 // Fonction pour créer un meeting avec les paramètres donnés
-MeetingNode* createMeeting(int day, int month, int year, int hour, int minute, int second) {
+MeetingNode* createMeeting(int day, int month, int year, int hour, int minute, int second, int level) {
     MeetingNode* newMeeting = (MeetingNode*)malloc(sizeof(MeetingNode));
     if (newMeeting == NULL) {
         fprintf(stderr, "Erreur d'allocation mémoire pour le noeud de réunion\n");
@@ -70,6 +70,7 @@ MeetingNode* createMeeting(int day, int month, int year, int hour, int minute, i
     newMeeting->meeting.hour = hour;
     newMeeting->meeting.minute = minute;
     newMeeting->meeting.second = second;
+    newMeeting->meeting.level = level;
 
     newMeeting->next = NULL;
 
@@ -95,6 +96,8 @@ LevelAgenda* addContact(LevelAgenda* myList) {
     int minute = 0;
     int seconde = 0;
 
+    int levelMeeting = 0;
+
     printf("Entrer le nom du contact sous la forme (nom_prenom) : ");
     scanf(" %99[^_]_%99s", name, surname);
 
@@ -104,11 +107,12 @@ LevelAgenda* addContact(LevelAgenda* myList) {
     hour = 11;
     minute = 11;
     seconde = 11;
+    levelMeeting = 0;
 
     // Créer une cellule avec un meeting et spécifier la colonne (index)
     int column = maxColumnsAgenda(myList);
     Agenda* newCell = createCellAgenda(name, surname, column);
-    MeetingNode* newMeeting = createMeeting(day, month, year, hour, minute, seconde);
+    MeetingNode* newMeeting = createMeeting(day, month, year, hour, minute, seconde, levelMeeting);
 
     // Ajouter le meeting à la liste des réunions de la cellule
     newMeeting->next = newCell->meetings;
@@ -134,8 +138,53 @@ LevelAgenda* deleteContact(LevelAgenda* myList) {
 
 
 LevelAgenda* addMeeting(LevelAgenda* list) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
+    // DEMANDER A USER LE NOM DU CONTACT A QUI ONT DONNE LE MEETING
+    char name[100] = "";
+    char surname[100] = "";
+    printf("Entrer le nom du contact sous la forme (nom_prenom) : ");
+    scanf(" %99[^_]_%99s", name, surname);
+
+    // RECHERCHER LA CELLULE CORRESPONDANT AU CONTACT
+    Agenda* current = list->head;
+    Agenda* contactCell = NULL;
+    while (current != NULL) {
+        if (strcmp(current->name, name) == 0 && strcmp(current->surname, surname) == 0) {
+            contactCell = current;
+            break;
+        }
+        current = current->next;
+    }
+
+    if (contactCell == NULL) {
+        printf("Contact non trouvé dans l'agenda.\n");
+        return list;
+    }
+
+    // DEMANDER A USER LA DATE (jj-mm-yyyy) ET L'HEURE (hh:mm:ss) DU MEETING
+    int day, month, year, hour, minute, second;
+    printf("Entrer la date du meeting (jj-mm-yyyy) : ");
+    scanf("%d-%d-%d", &day, &month, &year);
+
+    printf("Entrer l'heure du meeting (hh:mm:ss) : ");
+    scanf("%d:%d:%d", &hour, &minute, &second);
+
+    // COMPTER LE NOMBRE DE MEETING ET AJOUTER LE MEETING A LA SUITE DES AUTRES
+    int meetingCount = 0;
+    MeetingNode* meetingNode = contactCell->meetings;
+    while (meetingNode != NULL) {
+        meetingCount++;
+        meetingNode = meetingNode->next;
+    }
+
+    MeetingNode* newMeeting = createMeeting(day, month, year, hour, minute, second, meetingCount);
+    
+    newMeeting->next = contactCell->meetings;
+    contactCell->meetings = newMeeting;
+
+    return list;
 }
+
+
 
 
 // Recherche
@@ -162,15 +211,78 @@ void searchMeetingByHour(LevelAgenda* list) {
 }
 
 
-//Affichage
+// Sorting 
 
-
-int countCharName(LevelAgenda* list, int column) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
+void swap(Agenda* a, Agenda* b) {
+    Agenda temp = *a;
+    *a = *b;
+    *b = temp;
 }
 
-int countCharSurname(LevelAgenda* list, int column) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
+LevelAgenda* sortAgenda(LevelAgenda* list) {
+    // Vérifier si la liste est vide ou a un seul élément
+    if (list == NULL || list->head == NULL || list->head->next == NULL) {
+        return list; // Pas besoin de trier
+    }
+
+    int swapped;
+    Agenda* current;
+    Agenda* next = NULL;
+
+    do {
+        swapped = 0;
+        current = list->head;
+
+        while (current->next != next) {
+            // Si la colonne actuelle est supérieure à la colonne suivante
+            if (current->column > current->next->column) {
+                swap(current, current->next);
+                swapped = 1;
+            }
+            current = current->next;
+        }
+        next = current;
+
+    } while (swapped);
+
+    return list;
+}
+
+
+
+
+//Affichage
+
+int countCharName(LevelAgenda* list, Agenda* contact) {
+    // Vérifier si la liste ou le contact est NULL
+    if (list == NULL || contact == NULL) {
+        fprintf(stderr, "Liste ou contact NULL.\n");
+        return -1; // Valeur d'erreur
+    }
+
+    // Compter les caractères dans le champ 'name'
+    int count = 0;
+    for (int i = 0; contact->name[i] != '\0'; i++) {
+        count++;
+    }
+
+    return count;
+}
+
+int countCharSurname(LevelAgenda* list, Agenda* contact) {
+    // Vérifier si la liste ou le contact est NULL
+    if (list == NULL || contact == NULL) {
+        fprintf(stderr, "Liste ou contact NULL.\n");
+        return -1; // Valeur d'erreur
+    }
+
+    // Compter les caractères dans le champ 'surname'
+    int count = 0;
+    for (int i = 0; contact->surname[i] != '\0'; i++) {
+        count++;
+    }
+
+    return count;
 }
 
 void capitalizeString(char* str) {
@@ -214,38 +326,39 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
         return;
     }
 
-    int char_cell = 1;
+    int char_cell = 44;
     int maxCols = list->maxLevels;
 
     int* printedColumns = (int*)calloc(maxCols, sizeof(int));
     int lastPrinted = 0;
 
-    
-
     while (current != NULL) {
-        // Ajout de tirets pour les colonnes non imprimées
-        for (int i = lastPrinted + 1; i < current->column; i++) {
-            printf("La colonne est : %d", current->column);
-            int nbCharPreviousCell = 3;
 
-            for (int j = 0; j < char_cell + nbCharPreviousCell; j++) {
-                printf("-");
-            }
-            printedColumns[i] = 1;
+        //capitalizeString(current->name);
+
+        // Recherche de la réunion correspondant au niveau actuel
+        MeetingNode* meeting = current->meetings;
+        while (meeting != NULL && meeting->meeting.level != level) {
+            meeting = meeting->next;
         }
 
-        capitalizeString(current->name);
-        printf("> [ %s %s ~ %02d-%02d-%04d %02dh%02d:%02d (%d | %d) | @ - ]", 
-            current->name, current->surname, 
-            current->meetings->meeting.day, current->meetings->meeting.month, current->meetings->meeting.year,
-            current->meetings->meeting.hour, current->meetings->meeting.minute, current->meetings->meeting.second, current->column, level);
+        if (meeting != NULL) {
+            printf("> [ %s %s ~ %02d-%02d-%04d %02dh%02d:%02d (%d | %d) | @ - ] ", 
+                current->name, current->surname, 
+                meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
+                meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second, current->column, level);
+        } else {
+            int numberOfCaracteres = char_cell + countCharName(list, current) + countCharSurname(list, current);
+            for (int i = 0; i < numberOfCaracteres; i++) {
+                printf("-");
+            }
+        }
 
         // Utilisation de current->next au lieu de current->next->column
         if (current->next == NULL) {
-            printf(" ^^^^^>\n");
-        }
-        else if (current->next != NULL && current->next->column != current->column) {
-            printf(" ^^");
+            printf("__> NULL\n");
+        } else if (current->next != NULL && current->next->column != current->column) {
+            printf("--");
         } else {
             printf(" ");
             int remainingColumns = maxCols - (current->column + 1);
@@ -271,8 +384,6 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
             break;
         }
 
-
-
         printedColumns[current->column] = 1;
         lastPrinted = current->column;
         current = current->next;
@@ -281,11 +392,9 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
     free(printedColumns);
 }
 
-
-
-
 void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
     printf("\n");
+    //sortAgenda(list);
     for (int i = 0; i < list->maxLevels; i++) {
         printLevelAgenda(list, i, numberOfCells);
     }
