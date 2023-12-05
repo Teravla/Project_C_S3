@@ -13,38 +13,6 @@ typedef struct LevelList {
     Cell* head;
 } LevelList;
 
-//Partie III
-typedef struct Meeting {
-    int day;
-    int month;
-    int year;
-    int hour;
-    int minute;
-    int second;
-} Meeting;
-
-typedef struct Node {
-    Meeting meeting;
-    struct Node* next;
-} Node;
-
-typedef struct Agenda {
-    char name[100];
-    char surname[100];
-    Node* meetings; // Liste chaînée de réunions
-    
-    int level;
-    int column;
-
-    struct Agenda** next;
-} Agenda;
-
-typedef struct LevelAgenda {
-    int maxLevels;
-    Agenda* head;
-} LevelAgenda;
-
-
 typedef struct {
     Cell* cell;
     int columnIndex;
@@ -80,29 +48,7 @@ void fillTableWithRandomValues(LevelList* list, int n);
 SearchResult searchAllLevels(LevelList* list, int value); // Correction ici
 void compareSearchTimes(LevelList* list, int value);
 
-//Agenda
-LevelAgenda* addContact(LevelAgenda* myList);
-LevelAgenda* deleteContact(LevelAgenda* myList);
-void searchContact(LevelAgenda* list);
-void searchMeeting(LevelAgenda* list);
-void searchMeetingByDate(LevelAgenda* list);
-void searchMeetingByHour(LevelAgenda* list);
-LevelAgenda* addMeeting(LevelAgenda* list);
-int meetingExists(LevelAgenda* list, Agenda* meeting);
 
-int countCharName(LevelAgenda* list, int column);
-int countCharSurname(LevelAgenda* list, int column);
-void capitalizeString(char* str);
-void insertAtHeadAgenda(LevelAgenda* list, Agenda* newAgenda);
-LevelAgenda* createLevelAgenda(int maxLevels);
-Agenda* createCellAgenda(const char* name, const char* surname, int day, int month, int year, int hour, int minute, int second);
-int countCellsAgenda(LevelAgenda* list);
-void assignColumnIndicesAgenda(LevelAgenda* list, int numberOfCells);
-
-int maxColumnsAgenda(LevelAgenda* list);
-Agenda* obtenirCelluleAgenda(LevelAgenda* list, int column);
-void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells);
-void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells);
 
 //Main
 LevelList* listPreset();

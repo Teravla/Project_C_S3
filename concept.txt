@@ -13,3 +13,6 @@ SINON :
 
 Voir pour la création de liste aléatoire.
 -> Liste créer aléatoirement, à les même liste au 3 premier niveaux
+
+
+// CMD : cd "c:\Users\valen\Documents\EFREI\L2\Project_C_S3\" ; if ($?) { gcc Project.c Agenda.c -o Project } ; if ($?) { .\Project }
