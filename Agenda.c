@@ -212,41 +212,72 @@ void searchMeetingByHour(LevelAgenda* list) {
 
 
 // Sorting 
-
 void swap(Agenda* a, Agenda* b) {
     Agenda temp = *a;
     *a = *b;
     *b = temp;
+
+    // Mise à jour des liens next
+    Agenda* tempNext = a->next;
+    a->next = b->next;
+    b->next = tempNext;
+
+    printf("\n -- swap : test1 passed -- ");
 }
+
 
 LevelAgenda* sortAgenda(LevelAgenda* list) {
     // Vérifier si la liste est vide ou a un seul élément
     if (list == NULL || list->head == NULL || list->head->next == NULL) {
+        printf("\n -- sortAgenda : test0 passed --\n");
         return list; // Pas besoin de trier
     }
 
-    int swapped;
-    Agenda* current;
-    Agenda* next = NULL;
+    printf("\n -- sortAgenda : test1 passed --");
 
-    do {
-        swapped = 0;
-        current = list->head;
+    Agenda* current = list->head;
 
-        while (current->next != next) {
-            // Si la colonne actuelle est supérieure à la colonne suivante
-            if (current->column > current->next->column) {
-                swap(current, current->next);
-                swapped = 1;
+    while (current != NULL) {
+        Agenda* next = current->next;
+
+        while (next != NULL) {
+            printf("current : %s %s ~ %d\n", current->name, current->surname, current->column);
+            printf("next : %s %s ~ %d\n", next->name, next->surname, next->column);
+            if (current->column > next->column) {
+                swap(current, next);
+                printf("\n -- sortAgenda : test2 passed --\n\n");
             }
-            current = current->next;
+            
+            // Toujours incrémenter next même si aucune permutation n'est effectuée
+            next = next->next;
+            
+            if (next == NULL) {
+                printf("\n -- sortAgenda : WHILE : next Null --\n");
+                break;
+            }
         }
-        next = current;
+        printf("\n -- sortAgenda : test4 passed --\n\n");
 
-    } while (swapped);
+        current = current->next;
+        printf("\n -- sortAgenda : test5 passed --\n\n");
+    }
+
+    printf("\n -- sortAgenda : test6 passed --\n\n");
+
+    // AFFICHER LES NOMS DE L'AGENDA AVEC LEUR INDICE DE COLONNE 
+    current = list->head;
+    while (current != NULL) {
+        printf("Display after sort: %s %s ~ %d\n", current->name, current->surname, current->column);
+        current = current->next;
+    }
 
     return list;
 }
+
+
+
+
+
 
 
 
@@ -304,14 +335,6 @@ int countCellsAgenda(LevelAgenda* list) {
     }
 
     return count;
-}
-
-
-
-
-
-void assignColumnIndicesAgenda(LevelAgenda* list, int numberOfCells) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
 }
 
 
@@ -394,11 +417,15 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
 
 void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
     printf("\n");
-    //sortAgenda(list);
+
+    // Tri de l'agenda avant l'impression
+    LevelAgenda* sortedList = sortAgenda(list);
+
     for (int i = 0; i < list->maxLevels; i++) {
-        printLevelAgenda(list, i, numberOfCells);
+        printLevelAgenda(sortedList, i, numberOfCells);
     }
 }
+
 
 
 

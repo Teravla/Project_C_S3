@@ -64,8 +64,8 @@ void searchMeeting(LevelAgenda* list);
 void searchMeetingByDate(LevelAgenda* list);
 void searchMeetingByHour(LevelAgenda* list);
 
-// Sorting 
 
+// Sorting 
 void swap(Agenda* a, Agenda* b);
 LevelAgenda* sortAgenda(LevelAgenda* list);
 
@@ -74,7 +74,6 @@ int countCharName(LevelAgenda* list, Agenda* contact);
 int countCharSurname(LevelAgenda* list, Agenda* contact);
 void capitalizeString(char* str);
 int countCellsAgenda(LevelAgenda* list);
-void assignColumnIndicesAgenda(LevelAgenda* list, int numberOfCells);
 
 void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells);
 void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells);
