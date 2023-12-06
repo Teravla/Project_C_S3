@@ -57,12 +57,8 @@ LevelAgenda* addMeeting(LevelAgenda* list);
 
 
 //Recherche
-int meetingExists(LevelAgenda* list, Agenda* meeting);
-
 void searchContact(LevelAgenda* list);
 void searchMeeting(LevelAgenda* list);
-void searchMeetingByDate(LevelAgenda* list);
-void searchMeetingByHour(LevelAgenda* list);
 
 
 // Sorting 

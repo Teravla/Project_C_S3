@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #include "Agenda.h"
 
@@ -234,24 +235,115 @@ LevelAgenda* addMeeting(LevelAgenda* list) {
 // Recherche
 
 
-int meetingExists(LevelAgenda* list, Agenda* meeting) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
-}
-
 void searchContact(LevelAgenda* list) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
+    char nameToSearch[100];
+    char surnameToSearch[100];
+
+    // Demander a l'utilisateur le nom du contact
+    printf("Entrez le nom du contact (sous la forme nom_prenom) : ");
+    scanf(" %99[^_]_%99s", nameToSearch, surnameToSearch);
+
+    // Parcourir la liste et afficher les reunions correspondantes
+    Agenda* current = list->head;
+    while (current != NULL) {
+        // Comparer les noms et prenoms pour trouver le contact
+        if (strcmp(current->name, nameToSearch) == 0 && strcmp(current->surname, surnameToSearch) == 0) {
+            printf("Reunions pour %s %s :\n", current->name, current->surname);
+            MeetingNode* meeting = current->meetings;
+            while (meeting != NULL) {
+                printf("    %02d/%02d/%04d %02d:%02d:%02d\n",
+                       meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
+                       meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
+                meeting = meeting->next;
+            }
+            return; // Retourner des que le contact est trouve, pas besoin de continuer la recherche
+        }
+        current = current->next;
+    }
+
+    // Si on arrive ici, le contact n'a pas ete trouve
+    printf("Le contact \"%s %s\" n'a pas ete trouve dans l'agenda.\n", nameToSearch, surnameToSearch);
 }
 
 void searchMeeting(LevelAgenda* list) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
-}
+    int choice;
+    printf("Voulez-vous rechercher par la date (1) ou l'heure (2) du meeting ? ");
+    scanf("%d", &choice);
 
-void searchMeetingByDate(LevelAgenda* list) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
-}
+    // Consommer le caractere de nouvelle ligne restant dans le flux d'entree
+    while (getchar() != '\n');
 
-void searchMeetingByHour(LevelAgenda* list) {
-    printf("\n---\nCette fonctionnalite n'est pas encore disponible.\n");
+    bool meetingFound = false;  // Variable pour verifier si au moins une reunion a ete trouvee
+
+    do {
+        if (choice == 1) {
+            int day, month, year;
+
+            // Utiliser fgets pour lire la ligne
+            char dateInput[20];
+            printf("Entrez la date du meeting (jj-mm-aaaa) : ");
+            fgets(dateInput, sizeof(dateInput), stdin);
+
+            // Utiliser sscanf pour extraire les valeurs
+            if (sscanf(dateInput, "%d-%d-%d", &day, &month, &year) == 3) {
+                // Parcourir la liste et afficher les reunions correspondantes
+                Agenda* current = list->head;
+                while (current != NULL) {
+                    MeetingNode* meeting = current->meetings;
+                    while (meeting != NULL) {
+                        if (meeting->meeting.day == day && meeting->meeting.month == month && meeting->meeting.year == year) {
+                            printf("Meeting pour %s %s : %02d/%02d/%04d %02d:%02d:%02d\n",
+                                   current->name, current->surname,
+                                   meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
+                                   meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
+                            meetingFound = true;
+                        }
+                        meeting = meeting->next;
+                    }
+                    current = current->next;
+                }
+            } else {
+                printf("Format de date incorrect. Veuillez reessayer.\n");
+            }
+        } else if (choice == 2) {
+            int hour, minute, second;
+
+            // Utiliser fgets pour lire la ligne
+            char timeInput[20];
+            printf("Entrez l'heure du meeting (hh:mm:ss) : ");
+            fgets(timeInput, sizeof(timeInput), stdin);
+
+            // Utiliser sscanf pour extraire les valeurs
+            if (sscanf(timeInput, "%d:%d:%d", &hour, &minute, &second) == 3) {
+                // Parcourir la liste et afficher les reunions correspondantes
+                Agenda* current = list->head;
+                while (current != NULL) {
+                    MeetingNode* meeting = current->meetings;
+                    while (meeting != NULL) {
+                        if (meeting->meeting.hour == hour && meeting->meeting.minute == minute && meeting->meeting.second == second) {
+                            printf("Meeting pour %s %s : %02d/%02d/%04d %02d:%02d:%02d\n",
+                                   current->name, current->surname,
+                                   meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
+                                   meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
+                            meetingFound = true;
+                        }
+                        meeting = meeting->next;
+                    }
+                    current = current->next;
+                }
+            } else {
+                printf("Format d'heure incorrect. Veuillez reessayer.\n");
+            }
+        } else {
+            printf("Choix invalide. Veuillez reessayer.\n");
+        }
+
+        if (!meetingFound) {
+            printf("Aucun meeting correspondant a la recherche.\n");
+        }
+
+        // Si aucun meeting n'a ete trouve, demander a l'utilisateur de reessayer
+    } while (!meetingFound);
 }
 
 
