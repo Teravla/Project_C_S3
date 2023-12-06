@@ -847,11 +847,11 @@ int main() {
 
             printf("Bienvenue dans votre menu.\nVous pouvez : \n\n");
 
-            printf("1. Ajouter un ou plusieurs contacts.\n");
-            printf("2. Supprimer un ou plusieurs contacts.\n");
+            printf("1. Ajouter    un contact.\n");
+            printf("2. Supprimer  un contact.\n");
             printf("3. Rechercher un contact.\n");
             printf("4. Rechercher une reunion.\n");
-            printf("5. Assigner une nouvelle reunion a un contact.\n");
+            printf("5. Assigner   une nouvelle reunion a un contact.\n");
             printf("6. Afficher l'agenda.\n");
             
             do {
@@ -871,6 +871,8 @@ int main() {
                     break;
                 case 2:
                     myList = deleteContact(myList);
+                    int numberOfCellss = countCellsAgenda(myList);
+                    printAllLevelsAgenda(myList, numberOfCellss);
                     break;
                 case 3:
                     searchContact(myList);

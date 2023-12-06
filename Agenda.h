@@ -66,7 +66,7 @@ void searchMeetingByHour(LevelAgenda* list);
 
 
 // Sorting 
-void swap(Agenda* a, Agenda* b);
+void swap(Agenda* a, Agenda* b); 
 LevelAgenda* sortAgenda(LevelAgenda* list);
 
 //Affichage
