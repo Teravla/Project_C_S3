@@ -852,12 +852,13 @@ int main() {
             printf("3. Rechercher un contact.\n");
             printf("4. Rechercher une reunion.\n");
             printf("5. Assigner   une nouvelle reunion a un contact.\n");
-            printf("6. Afficher l'agenda.\n");
+            printf("6. Supprimer  une reunion.\n");
+            printf("7. Afficher l'agenda.\n");
             
             do {
                 printf("Que voulez-vous faire (0 pour quitter): ");
                 scanf("%d", &choiceAgenda);
-            } while (choiceAgenda < 0 || choiceAgenda > 6);
+            } while (choiceAgenda < 0 || choiceAgenda > 7);
 
             switch (choiceAgenda) {
                 case 0:
@@ -886,7 +887,13 @@ int main() {
                     printAllLevelsAgenda(myList, numberOfCellsssss);
                     break;
                 case 6:
-                    printf("Cette fonctionnalite n'est pas encore disponible.\n");
+                    deleteMeeting(myList);
+                    int numberOfCellssssss = countCellsAgenda(myList);
+                    printAllLevelsAgenda(myList, numberOfCellssssss);
+                    break;
+                case 7:
+                    int numberOfCellsssssss = countCellsAgenda(myList);
+                    printAllLevelsAgenda(myList, numberOfCellsssssss);
                     break;
                 default:
                     break;

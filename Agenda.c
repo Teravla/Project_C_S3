@@ -230,6 +230,85 @@ LevelAgenda* addMeeting(LevelAgenda* list) {
 }
 
 
+// Fonction pour supprimer un meeting d'un contact
+LevelAgenda* deleteMeeting(LevelAgenda* list) {
+    char nameToDelete[100];
+    char surnameToDelete[100];
+
+    // Demander a l'utilisateur le nom et prenom du contact
+    printf("Entrez le nom du contact (sous la forme nom_prenom) : ");
+    scanf(" %99[^_]_%99s", nameToDelete, surnameToDelete);
+
+    // Rechercher le contact dans l'agenda
+    Agenda* currentLevel = list->head;
+
+    while (currentLevel != NULL) {
+        // Comparer les noms et prenoms pour trouver le contact
+        if (strcmp(currentLevel->name, nameToDelete) == 0 && strcmp(currentLevel->surname, surnameToDelete) == 0) {
+            // Afficher les meetings du contact
+            printf("Liste des meetings pour %s %s :\n", nameToDelete, surnameToDelete);
+            MeetingNode* currentMeeting = currentLevel->meetings;
+
+            while (currentMeeting != NULL) {
+                printf("%02d/%02d/%04d %02d:%02d:%02d\n", 
+                        currentMeeting->meeting.day, currentMeeting->meeting.month, currentMeeting->meeting.year,
+                        currentMeeting->meeting.hour, currentMeeting->meeting.minute, currentMeeting->meeting.second);
+                currentMeeting = currentMeeting->next;
+            }
+
+            // Demander a l'utilisateur le meeting a supprimer
+            int day, month, year, hour, minute, second;
+            printf("Entrez le meeting a supprimer (jj-mm-aaaa hh:mm:ss) : ");
+            int result = scanf("%d-%d-%d %d:%d:%d", &day, &month, &year, &hour, &minute, &second);
+
+            if (result == 6) {
+                // Rechercher le meeting dans la liste et le supprimer
+                MeetingNode* previousMeeting = NULL;
+                MeetingNode* currentMeeting = currentLevel->meetings;
+
+                while (currentMeeting != NULL) {
+                    if (currentMeeting->meeting.day == day && currentMeeting->meeting.month == month && currentMeeting->meeting.year == year &&
+                        currentMeeting->meeting.hour == hour && currentMeeting->meeting.minute == minute && currentMeeting->meeting.second == second) {
+                            printf("\n -- deleteMeeting : test1 passed -- ");
+                            // Le meeting a ete trouve, le supprimer
+                            if (previousMeeting != NULL) {
+                                previousMeeting->next = currentMeeting->next;
+                            } else {
+                                currentLevel->meetings = currentMeeting->next;
+                            }
+
+                            free(currentMeeting); // Liberer la memoire du meeting supprime
+                            printf("Meeting supprime avec succes.\n");
+
+                            //Correction display 
+                            sortAgendaMeeting(list);
+
+                            return list;
+                    }
+
+                    previousMeeting = currentMeeting;
+                    currentMeeting = currentMeeting->next;
+                }
+
+                printf("Meeting non trouve. Aucun meeting supprime.\n");
+            } else {
+                printf("Format de meeting incorrect. Aucun meeting supprime.\n");
+            }
+            return list; // Retourner la liste inchangee si le meeting n'a pas ete trouve
+        }
+
+        currentLevel = currentLevel->next;
+    }
+
+    // Si on arrive ici, le contact n'a pas ete trouve
+    printf("Le contact \"%s %s\" n'a pas ete trouve dans l'agenda.\n", nameToDelete, surnameToDelete);
+
+
+    return list;
+}
+
+
+
 
 
 // Recherche
@@ -410,11 +489,78 @@ LevelAgenda* sortAgenda(LevelAgenda* list) {
     return list;
 }
 
+void sortAgendaMeeting(LevelAgenda* list) {
+    // Initialiser le niveau à 0
+    int n = 0;
 
+    // Parcourir la liste des agendas
+    Agenda* current = list->head;
 
+    while (current != NULL) {
+        // Vérifier si le niveau actuel de la cellule contient un meeting
+        if (hasMeeting(current, n)) {
+            n++;
+        } else {
+            // Déplacer le meeting du niveau n+1 au niveau n dans la même cellule
+            moveMeeting(current, n + 1, n);
+        }
 
+        // Passer à la cellule suivante
+        current = current->next;
+    }
+}
 
+// Fonction pour vérifier si le niveau de la cellule contient un meeting
+bool hasMeeting(Agenda* agenda, int level) {
+    MeetingNode* meeting = agenda->meetings;
 
+    // Parcourir les meetings pour le niveau spécifié
+    while (meeting != NULL) {
+        if (meeting->meeting.level == level) {
+            printf("\n -- hasMeeting : test1 passed --");
+            return true;
+        }
+        meeting = meeting->next;
+    }
+
+    return false;
+}
+
+// Fonction pour déplacer un meeting d'un niveau à un autre dans la même cellule
+void moveMeeting(Agenda* agenda, int fromLevel, int toLevel) {
+    MeetingNode* currentMeeting = agenda->meetings;
+    MeetingNode* previousMeeting = NULL;
+
+    // Parcourir les meetings pour le niveau fromLevel
+    while (currentMeeting != NULL) {
+        if (currentMeeting->meeting.level == fromLevel) {
+            // Supprimer le meeting du niveau fromLevel
+            if (previousMeeting != NULL) {
+                previousMeeting->next = currentMeeting->next;
+            } else {
+                agenda->meetings = currentMeeting->next;
+            }
+
+            // Mettre à jour le niveau du meeting
+            currentMeeting->meeting.level = toLevel;
+
+            // Insérer le meeting au niveau toLevel
+            insertMeeting(agenda, currentMeeting);
+
+            // Terminer la boucle après le déplacement
+            break;
+        }
+
+        previousMeeting = currentMeeting;
+        currentMeeting = currentMeeting->next;
+    }
+}
+
+// Fonction pour insérer un meeting dans la liste des meetings d'une cellule
+void insertMeeting(Agenda* agenda, MeetingNode* newMeeting) {
+    newMeeting->next = agenda->meetings;
+    agenda->meetings = newMeeting;
+}
 
 
 
@@ -475,7 +621,7 @@ int countCellsAgenda(LevelAgenda* list) {
 
 
 void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
-    printf("[ list head_%d | @ - ] __", level);
+    printf("[ list head_%d | @ - ] --", level);
 
     Agenda* current = list->head;
 
@@ -515,7 +661,7 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
 
         // Utilisation de current->next au lieu de current->next->column
         if (current->next == NULL) {
-            printf("__> NULL\n");
+            printf("--> NULL\n");
         } else if (current->next != NULL && current->next->column != current->column) {
             printf("--");
         } else {

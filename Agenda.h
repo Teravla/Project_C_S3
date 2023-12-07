@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #ifndef AGENDA_H
 #define AGENDA_H
 
@@ -54,6 +56,8 @@ LevelAgenda* deleteContact(LevelAgenda* myList);
 
 //Gestion des Meetings
 LevelAgenda* addMeeting(LevelAgenda* list);
+LevelAgenda* deleteMeeting(LevelAgenda* list);
+
 
 
 //Recherche
@@ -64,6 +68,11 @@ void searchMeeting(LevelAgenda* list);
 // Sorting 
 void swap(Agenda* a, Agenda* b); 
 LevelAgenda* sortAgenda(LevelAgenda* list);
+
+void sortAgendaMeeting(LevelAgenda* list);
+bool hasMeeting(Agenda* agenda, int level);
+void moveMeeting(Agenda* agenda, int fromLevel, int toLevel);
+void insertMeeting(Agenda* agenda, MeetingNode* newMeeting);
 
 //Affichage
 int countCharName(LevelAgenda* list, Agenda* contact);
