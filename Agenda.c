@@ -437,7 +437,7 @@ void swap(Agenda* a, Agenda* b) {
     a->next = b->next;
     b->next = tempNext;
 
-    printf("\n -- swap : test1 passed -- ");
+    //printf("\n -- swap : test1 passed -- ");
 }
 
 
@@ -517,7 +517,6 @@ bool hasMeeting(Agenda* agenda, int level) {
     // Parcourir les meetings pour le niveau spécifié
     while (meeting != NULL) {
         if (meeting->meeting.level == level) {
-            printf("\n -- hasMeeting : test1 passed --");
             return true;
         }
         meeting = meeting->next;
@@ -561,6 +560,39 @@ void insertMeeting(Agenda* agenda, MeetingNode* newMeeting) {
     newMeeting->next = agenda->meetings;
     agenda->meetings = newMeeting;
 }
+
+
+// Fonction pour comparer deux chaînes de caractères (utilisée pour le tri)
+int compareNames(const void* a, const void* b) {
+    const Agenda* agendaA = *(const Agenda**)a;
+    const Agenda* agendaB = *(const Agenda**)b;
+    return strcmp(agendaA->name, agendaB->name);
+}
+
+// Fonction pour trier les cellules de l'agenda par ordre alphabétique des noms
+void sortAgendaAlphabetically(LevelAgenda* list) {
+    // Convertir la liste chaînée en tableau pour faciliter le tri
+    int agendaCount = countCellsAgenda(list);
+    Agenda* agendaArray[agendaCount];
+
+    int i = 0;
+    Agenda* current = list->head;
+    while (current != NULL) {
+        agendaArray[i++] = current;
+        current = current->next;
+    }
+
+    // Utiliser la fonction qsort pour trier le tableau
+    qsort(agendaArray, agendaCount, sizeof(Agenda*), compareNames);
+
+    // Reconstituer la liste chaînée à partir du tableau trié
+    list->head = NULL;
+    for (i = 0; i < agendaCount; i++) {
+        agendaArray[i]->next = list->head;
+        list->head = agendaArray[i];
+    }
+}
+
 
 
 
@@ -701,10 +733,12 @@ void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
     printf("\n");
 
     // Tri de l'agenda avant l'impression
-    LevelAgenda* sortedList = sortAgenda(list);
+    sortAgenda(list);
+    sortAgendaAlphabetically(list);
+
 
     for (int i = 0; i < list->maxLevels; i++) {
-        printLevelAgenda(sortedList, i, numberOfCells);
+        printLevelAgenda(list, i, numberOfCells);
     }
 }
 
