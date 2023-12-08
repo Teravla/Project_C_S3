@@ -71,6 +71,8 @@ LevelAgenda* sortAgenda(LevelAgenda* list);
 
 void sortAgendaAlphabetically(LevelAgenda* list);
 
+void searchContactAutoComplete(LevelAgenda* list);
+
 void sortAgendaMeeting(LevelAgenda* list);
 bool hasMeeting(Agenda* agenda, int level);
 void moveMeeting(Agenda* agenda, int fromLevel, int toLevel);

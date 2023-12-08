@@ -314,34 +314,92 @@ LevelAgenda* deleteMeeting(LevelAgenda* list) {
 // Recherche
 
 
-void searchContact(LevelAgenda* list) {
-    char nameToSearch[100];
-    char surnameToSearch[100];
+void searchContactAutoComplete(LevelAgenda* list) {
+    char partialName[100] = "";  // Initialisez la chaîne partielle
+    char currentChar[2];  // Un tableau de deux caractères pour la saisie utilisateur
+    bool searchContinues = true;
 
-    // Demander a l'utilisateur le nom du contact
-    printf("Entrez le nom du contact (sous la forme nom_prenom) : ");
-    scanf(" %99[^_]_%99s", nameToSearch, surnameToSearch);
+    while (searchContinues) {
+        printf("Entrez le caractere suivant du nom du contact (ou 0 pour terminer) : ");
+        scanf("%1s", currentChar);
 
-    // Parcourir la liste et afficher les reunions correspondantes
-    Agenda* current = list->head;
-    while (current != NULL) {
-        // Comparer les noms et prenoms pour trouver le contact
-        if (strcmp(current->name, nameToSearch) == 0 && strcmp(current->surname, surnameToSearch) == 0) {
-            printf("Reunions pour %s %s :\n", current->name, current->surname);
-            MeetingNode* meeting = current->meetings;
-            while (meeting != NULL) {
-                printf("    %02d/%02d/%04d %02d:%02d:%02d\n",
-                       meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
-                       meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
-                meeting = meeting->next;
+        // Vérifiez si l'utilisateur a choisi de terminer la saisie
+        if (currentChar[0] == '0') {
+            searchContinues = false;
+        } else {
+            // Ajoutez le caractère actuel à la chaîne partielle
+            partialName[strlen(partialName)] = currentChar[0];
+
+            // Parcourez la liste et affichez les noms correspondants
+            Agenda* current = list->head;
+            while (current != NULL) {
+                // Comparez les noms pour trouver les correspondances exactes
+                if (strncmp(current->name, partialName, strlen(partialName)) == 0) {
+                    printf("- %s %s\n", current->name, current->surname);
+                }
+                current = current->next;
             }
-            return; // Retourner des que le contact est trouve, pas besoin de continuer la recherche
-        }
-        current = current->next;
-    }
 
-    // Si on arrive ici, le contact n'a pas ete trouve
-    printf("Le contact \"%s %s\" n'a pas ete trouve dans l'agenda.\n", nameToSearch, surnameToSearch);
+            // Vérifiez s'il n'y a qu'une seule correspondance, auquel cas la recherche est terminée
+            int matchesCount = 0;
+            current = list->head;
+            while (current != NULL) {
+                if (strncmp(current->name, partialName, strlen(partialName)) == 0) {
+                    matchesCount++;
+                }
+                current = current->next;
+            }
+
+            if (matchesCount == 1) {
+                searchContinues = false;
+                printf("Un seul contact correspondant. La recherche est terminee.\n");
+            }
+        }
+    }
+}
+
+void searchContact(LevelAgenda* list) {
+
+    int choiceAutoComplete = 0;
+
+    printf("\nVous avez choisi la recherche de contact.\n");
+    printf("Voulez-vous utiliser l'autocompletion ? (1 : oui, 0 : non) ");
+    scanf("%d", &choiceAutoComplete);
+
+    if (choiceAutoComplete == 1) {
+        searchContactAutoComplete(list);
+    } else if (choiceAutoComplete == 0) {
+        char nameToSearch[100];
+        char surnameToSearch[100];
+
+        // Demander a l'utilisateur le nom du contact
+        printf("Entrez le nom du contact (sous la forme nom_prenom) : ");
+        scanf(" %99[^_]_%99s", nameToSearch, surnameToSearch);
+
+        // Parcourir la liste et afficher les reunions correspondantes
+        Agenda* current = list->head;
+        while (current != NULL) {
+            // Comparer les noms et prenoms pour trouver le contact
+            if (strcmp(current->name, nameToSearch) == 0 && strcmp(current->surname, surnameToSearch) == 0) {
+                printf("Reunions pour %s %s :\n", current->name, current->surname);
+                MeetingNode* meeting = current->meetings;
+                while (meeting != NULL) {
+                    printf("    %02d/%02d/%04d %02d:%02d:%02d\n",
+                        meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
+                        meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
+                    meeting = meeting->next;
+                }
+                return; // Retourner des que le contact est trouve, pas besoin de continuer la recherche
+            }
+            current = current->next;
+        }
+
+        // Si on arrive ici, le contact n'a pas ete trouve
+        printf("Le contact \"%s %s\" n'a pas ete trouve dans l'agenda.\n", nameToSearch, surnameToSearch);
+
+    } else {
+        printf("Choix invalide. Veuillez reessayer.\n");
+    }
 }
 
 void searchMeeting(LevelAgenda* list) {
@@ -490,31 +548,31 @@ LevelAgenda* sortAgenda(LevelAgenda* list) {
 }
 
 void sortAgendaMeeting(LevelAgenda* list) {
-    // Initialiser le niveau à 0
+    // Initialiser le niveau a 0
     int n = 0;
 
     // Parcourir la liste des agendas
     Agenda* current = list->head;
 
     while (current != NULL) {
-        // Vérifier si le niveau actuel de la cellule contient un meeting
+        // Verifier si le niveau actuel de la cellule contient un meeting
         if (hasMeeting(current, n)) {
             n++;
         } else {
-            // Déplacer le meeting du niveau n+1 au niveau n dans la même cellule
+            // Deplacer le meeting du niveau n+1 au niveau n dans la même cellule
             moveMeeting(current, n + 1, n);
         }
 
-        // Passer à la cellule suivante
+        // Passer a la cellule suivante
         current = current->next;
     }
 }
 
-// Fonction pour vérifier si le niveau de la cellule contient un meeting
+// Fonction pour verifier si le niveau de la cellule contient un meeting
 bool hasMeeting(Agenda* agenda, int level) {
     MeetingNode* meeting = agenda->meetings;
 
-    // Parcourir les meetings pour le niveau spécifié
+    // Parcourir les meetings pour le niveau specifie
     while (meeting != NULL) {
         if (meeting->meeting.level == level) {
             return true;
@@ -525,7 +583,7 @@ bool hasMeeting(Agenda* agenda, int level) {
     return false;
 }
 
-// Fonction pour déplacer un meeting d'un niveau à un autre dans la même cellule
+// Fonction pour deplacer un meeting d'un niveau a un autre dans la même cellule
 void moveMeeting(Agenda* agenda, int fromLevel, int toLevel) {
     MeetingNode* currentMeeting = agenda->meetings;
     MeetingNode* previousMeeting = NULL;
@@ -540,13 +598,13 @@ void moveMeeting(Agenda* agenda, int fromLevel, int toLevel) {
                 agenda->meetings = currentMeeting->next;
             }
 
-            // Mettre à jour le niveau du meeting
+            // Mettre a jour le niveau du meeting
             currentMeeting->meeting.level = toLevel;
 
-            // Insérer le meeting au niveau toLevel
+            // Inserer le meeting au niveau toLevel
             insertMeeting(agenda, currentMeeting);
 
-            // Terminer la boucle après le déplacement
+            // Terminer la boucle apres le deplacement
             break;
         }
 
@@ -555,7 +613,7 @@ void moveMeeting(Agenda* agenda, int fromLevel, int toLevel) {
     }
 }
 
-// Fonction pour insérer un meeting dans la liste des meetings d'une cellule
+// Fonction pour inserer un meeting dans la liste des meetings d'une cellule
 void insertMeeting(Agenda* agenda, MeetingNode* newMeeting) {
     newMeeting->next = agenda->meetings;
     agenda->meetings = newMeeting;
@@ -563,7 +621,7 @@ void insertMeeting(Agenda* agenda, MeetingNode* newMeeting) {
 
 
 
-// Fonction pour trier les cellules de l'agenda par ordre alphabétique des noms
+// Fonction pour trier les cellules de l'agenda par ordre alphabetique des noms
 void sortAgendaAlphabetically(LevelAgenda* list) {
     if (list == NULL || list->head == NULL || list->head->next == NULL) {
         // Pas besoin de trier s'il y a 0 ou 1 cellule dans l'agenda
@@ -579,7 +637,7 @@ void sortAgendaAlphabetically(LevelAgenda* list) {
         current = list->head;
 
         while (current->next != last) {
-            // Comparer les noms des cellules et échanger si nécessaire
+            // Comparer les noms des cellules et echanger si necessaire
             if (strcmp(current->name, current->next->name) > 0) {
                 swap(current, current->next);
                 swapped = 1;

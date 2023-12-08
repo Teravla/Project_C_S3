@@ -9,11 +9,11 @@ TO DO LIST:
 - [x] Afficher l’ensembles des cellules de la liste pour un niveau donné
 - [x] Afficher tous les niveaux de la liste
 - [x] afficher tous les niveaux de la liste, en alignant les cellules
-- [ ] Insérer une cellule à niveau dans la liste, au bon endroit, de manière à ce que la liste reste triée par ordre croissant
+- [x] Insérer une cellule à niveau dans la liste, au bon endroit, de manière à ce que la liste reste triée par ordre croissant / alphabétique
 
 RESTE A FAIRE
 
-- [ ] Rechercher un contact, et proposer une complétion automatique à partir de la 3ème lettre entrée pour le nom (il faudra donc faire la saisie du nom de recherche caractère par caractère) ;
+- [x] Rechercher un contact, et proposer une complétion automatique à partir de la 3ème lettre entrée pour le nom (il faudra donc faire la saisie du nom de recherche caractère par caractère) ;
 - [x] Afficher les rendez-vous d’un contact ;
 - [x] Créer un contact (avec insertion dans la liste) ;
 - [x] Créer un rendez-vous pour un contact (avec insertion dans la liste si le contact n’existe pas) ;
