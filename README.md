@@ -20,4 +20,4 @@ RESTE A FAIRE
 - [x] Supprimer un rendez-vous ;
 - [ ] Sauvegarder le fichier de tous les rendez-vous ;
 - [ ] Charger un fichier de rendez-vous ;
-- [ ] Fournir les temps de calcul pour une insertion de nouveau contact : voir point 2) ci –dessous
+- [ ] Fournir les temps de calcul pour une insertion de nouveau contact
