@@ -78,6 +78,7 @@ bool hasMeeting(Agenda* agenda, int level);
 void moveMeeting(Agenda* agenda, int fromLevel, int toLevel);
 void insertMeeting(Agenda* agenda, MeetingNode* newMeeting);
 
+
 //Affichage
 int countCharName(LevelAgenda* list, Agenda* contact);
 int countCharSurname(LevelAgenda* list, Agenda* contact);
@@ -88,11 +89,15 @@ void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells);
 void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells);
 
 
+//Export 
+void exportAgenda(LevelAgenda* list);
+LevelAgenda* importAgenda(const char* fileName);
 
 
 //Other
 int maxColumnsAgenda(LevelAgenda* list);
 Agenda* obtenirCelluleAgenda(LevelAgenda* list, int column);
+void freeAgendaList(LevelAgenda* agendaList);
 
 
 #endif

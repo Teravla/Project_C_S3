@@ -835,15 +835,28 @@ int main() {
     } else {
 
         int choiceAgenda;
-
-        LevelAgenda* myList = createLevelAgenda(5);
-
-        char fileName[100];
-        char name[100];
-        char surname[100] = "Valentin";
+        int choiceImport;
+        LevelAgenda* myList;
 
         do {
-            printf("\n\nBonjour %s!\n\n", surname);
+            printf("\nVous avez la possibilite d'importer un agenda, voulez-vous importer un agenda? (1 pour Oui, 0 pour Non) : ");
+            scanf("%d", &choiceImport);
+        } while (choiceImport < 0 || choiceImport > 1);
+
+        if (choiceImport == 1) {
+            char fileName[100];
+            printf("Veuillez saisir le nom du fichier : ");
+            scanf("%s", fileName);
+            // Assigner le résultat de la fonction importAgenda à myList
+            myList = importAgenda(fileName);
+            int numberOfCellImport = countCellsAgenda(myList);
+            printAllLevelsAgenda(myList, numberOfCellImport);
+        } else {
+            printf("Vous avez choisi de ne pas importer d'agenda.\n");
+            myList = createLevelAgenda(5);
+        }
+
+        do {
 
             printf("Bienvenue dans votre menu.\nVous pouvez : \n\n");
 
@@ -854,15 +867,16 @@ int main() {
             printf("5. Assigner   une nouvelle reunion a un contact.\n");
             printf("6. Supprimer  une reunion.\n");
             printf("7. Afficher l'agenda.\n");
+            printf("8. Exporter l'agenda.\n");
             
             do {
                 printf("Que voulez-vous faire (0 pour quitter): ");
                 scanf("%d", &choiceAgenda);
-            } while (choiceAgenda < 0 || choiceAgenda > 7);
+            } while (choiceAgenda < 0 || choiceAgenda > 8);
 
             switch (choiceAgenda) {
                 case 0:
-                    printf("Au revoir %s!\n", surname);
+                    printf("Au revoir !\n");
                     return 0;
                     break;
                 case 1:
@@ -894,6 +908,9 @@ int main() {
                 case 7:
                     int numberOfCellsssssss = countCellsAgenda(myList);
                     printAllLevelsAgenda(myList, numberOfCellsssssss);
+                    break;
+                case 8:
+                    exportAgenda(myList);
                     break;
                 default:
                     break;

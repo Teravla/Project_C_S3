@@ -18,6 +18,6 @@ RESTE A FAIRE
 - [x] Créer un contact (avec insertion dans la liste) ;
 - [x] Créer un rendez-vous pour un contact (avec insertion dans la liste si le contact n’existe pas) ;
 - [x] Supprimer un rendez-vous ;
-- [ ] Sauvegarder le fichier de tous les rendez-vous ;
-- [ ] Charger un fichier de rendez-vous ;
+- [x] Sauvegarder le fichier de tous les rendez-vous ;
+- [x] Charger un fichier de rendez-vous ;
 - [ ] Fournir les temps de calcul pour une insertion de nouveau contact

@@ -316,18 +316,18 @@ LevelAgenda* deleteMeeting(LevelAgenda* list) {
 
 void searchContactAutoComplete(LevelAgenda* list) {
     char partialName[100] = "";  // Initialisez la chaîne partielle
-    char currentChar[2];  // Un tableau de deux caractères pour la saisie utilisateur
+    char currentChar[2];  // Un tableau de deux caracteres pour la saisie utilisateur
     bool searchContinues = true;
 
     while (searchContinues) {
         printf("Entrez le caractere suivant du nom du contact (ou 0 pour terminer) : ");
         scanf("%1s", currentChar);
 
-        // Vérifiez si l'utilisateur a choisi de terminer la saisie
+        // Verifiez si l'utilisateur a choisi de terminer la saisie
         if (currentChar[0] == '0') {
             searchContinues = false;
         } else {
-            // Ajoutez le caractère actuel à la chaîne partielle
+            // Ajoutez le caractere actuel a la chaîne partielle
             partialName[strlen(partialName)] = currentChar[0];
 
             // Parcourez la liste et affichez les noms correspondants
@@ -340,7 +340,7 @@ void searchContactAutoComplete(LevelAgenda* list) {
                 current = current->next;
             }
 
-            // Vérifiez s'il n'y a qu'une seule correspondance, auquel cas la recherche est terminée
+            // Verifiez s'il n'y a qu'une seule correspondance, auquel cas la recherche est terminee
             int matchesCount = 0;
             current = list->head;
             while (current != NULL) {
@@ -715,21 +715,18 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
 
     Agenda* current = list->head;
 
+
     // Ajout d'une condition pour gerer le cas où la liste est vide
     if (current == NULL) {
         printf("-> NULL\n");
         return;
     }
 
-    int char_cell = 44;
+    int char_cell = 36;
     int maxCols = list->maxLevels;
 
-    int* printedColumns = (int*)calloc(maxCols, sizeof(int));
-    int lastPrinted = 0;
 
     while (current != NULL) {
-
-        //capitalizeString(current->name);
 
         // Recherche de la reunion correspondant au niveau actuel
         MeetingNode* meeting = current->meetings;
@@ -738,58 +735,29 @@ void printLevelAgenda(LevelAgenda* list, int level, int numberOfCells) {
         }
 
         if (meeting != NULL) {
-            printf("> [ %s %s ~ %02d-%02d-%04d %02dh%02d:%02d (%d | %d) | @ - ] ", 
+            printf("> [ %s %s ~ %02d-%02d-%04d %02dh%02d:%02d | @ - ] ", 
                 current->name, current->surname, 
                 meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
-                meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second, current->column, level);
+                meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
         } else {
             int numberOfCaracteres = char_cell + countCharName(list, current) + countCharSurname(list, current);
             for (int i = 0; i < numberOfCaracteres; i++) {
                 printf("-");
             }
         }
-
-        // Utilisation de current->next au lieu de current->next->column
         if (current->next == NULL) {
             printf("--> NULL\n");
         } else if (current->next != NULL && current->next->column != current->column) {
             printf("--");
-        } else {
-            printf(" ");
-            int remainingColumns = maxCols - (current->column + 1);
+        } 
 
-            // Modification de la condition de boucle
-            if (remainingColumns > 0) {
-                for (int k = 0; k < remainingColumns; k++) {
-                    // Obtenez la cellule correspondant a la colonne (fin de la liste - k)
-                    Agenda* celluleCourante = obtenirCelluleAgenda(list, maxCols - k - 1);
-
-                    int nbCharCurrentCell = 3;
-                    int totalChars = char_cell + nbCharCurrentCell;
-
-                    // Affichage des tirets
-                    for (int i = 0; i < totalChars; i++) {
-                        printf(".");
-                    }
-                }
-                printf("___> NULL\n");
-            } else {
-                printf("___> NULL\n");
-            }
-            break;
-        }
-
-        printedColumns[current->column] = 1;
-        lastPrinted = current->column;
         current = current->next;
     }
 
-    free(printedColumns);
 }
 
 void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
     printf("\n");
-
     // Tri de l'agenda avant l'impression
     LevelAgenda* sortList = sortAgenda(list);
     sortAgendaAlphabetically(sortList);
@@ -799,6 +767,181 @@ void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
         printLevelAgenda(sortList, i, numberOfCells);
     }
 }
+
+
+// Export 
+
+void exportAgenda(LevelAgenda* list) {
+    char fileName[100];  // Vous pouvez ajuster la taille selon vos besoins
+
+    // Demander le nom du fichier à l'utilisateur
+    printf("Entrez le nom du fichier pour exporter l'agenda : ");
+    scanf("%s", fileName);
+
+    FILE* file = fopen(fileName, "w");
+
+    if (file == NULL) {
+        // Si le fichier n'existe pas, tentez de le créer
+        file = fopen(fileName, "w");
+        if (file == NULL) {
+            printf("Erreur lors de la création du fichier.\n");
+            return;
+        }
+    }
+
+    Agenda* current = list->head;
+    while (current != NULL) {
+        fprintf(file, "Contact: %s %s\n", current->name, current->surname);
+
+        MeetingNode* meeting = current->meetings;
+
+        // Stocker les réunions dans un tableau pour les afficher dans l'ordre inverse du niveau
+        int meetingCount = 0;
+        while (meeting != NULL) {
+            meetingCount++;
+            meeting = meeting->next;
+        }
+
+        MeetingNode** meetingArray = malloc(meetingCount * sizeof(MeetingNode*));
+        if (meetingArray == NULL) {
+            printf("Erreur lors de l'allocation mémoire pour le tableau de réunions.\n");
+            fclose(file);
+            return;
+        }
+
+        // Remplir le tableau avec les réunions
+        meeting = current->meetings;
+        for (int i = 0; i < meetingCount; i++) {
+            meetingArray[i] = meeting;
+            meeting = meeting->next;
+        }
+
+        // Afficher les réunions dans l'ordre inverse du niveau
+        for (int i = meetingCount - 1; i >= 0; i--) {
+            fprintf(file, "Meeting level %d: %02d/%02d/%04d %02d:%02d:%02d\n",
+                    meetingArray[i]->meeting.level,
+                    meetingArray[i]->meeting.day, meetingArray[i]->meeting.month, meetingArray[i]->meeting.year,
+                    meetingArray[i]->meeting.hour, meetingArray[i]->meeting.minute, meetingArray[i]->meeting.second);
+        }
+
+        free(meetingArray);  // Libérer la mémoire allouée pour le tableau
+
+        fprintf(file, "\n");  // Ajouter une ligne vide entre chaque contact
+        current = current->next;
+    }
+
+    fclose(file);
+    printf("Agenda exporté avec succès vers le fichier %s.\n", fileName);
+}
+
+
+// Fonction pour importer un agenda a partir d'un fichier
+LevelAgenda* importAgenda(const char* fileName) {
+    FILE* file = fopen(fileName, "r");
+
+    if (file == NULL) {
+        printf("Erreur lors de l'ouverture du fichier.\n");
+        return NULL;
+    }
+
+    LevelAgenda* agendaList = (LevelAgenda*)malloc(sizeof(LevelAgenda));
+    if (agendaList == NULL) {
+        printf("Erreur lors de l'allocation memoire pour la liste d'agenda.\n");
+        fclose(file);
+        return NULL;
+    }
+
+    agendaList->maxLevels = 5;
+    agendaList->head = NULL;
+
+    Agenda* currentAgenda = NULL;
+    MeetingNode* currentMeeting = NULL;
+
+    char line[256];
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        if (strncmp(line, "Contact:", 8) == 0) {
+            if (currentAgenda != NULL) {
+                currentAgenda->next = agendaList->head;
+                agendaList->head = currentAgenda;
+                //printf("\n -- importAgenda : test1 passed --\n");
+            }
+
+            currentAgenda = (Agenda*)malloc(sizeof(Agenda));
+            if (currentAgenda == NULL) {
+                printf("Erreur lors de l'allocation memoire pour l'agenda.\n");
+                freeAgendaList(agendaList);
+                fclose(file);
+                return NULL;
+            }
+
+            currentAgenda->meetings = NULL;
+            sscanf(line, "Contact: %s %s", currentAgenda->name, currentAgenda->surname);
+            currentAgenda->next = NULL;
+            currentMeeting = NULL;
+        } else if (strncmp(line, "Meeting level", 13) == 0) {
+            if (currentAgenda == NULL) {
+                printf("Erreur : Meeting trouve sans Contact correspondant.\n");
+                freeAgendaList(agendaList);
+                fclose(file);
+                return NULL;
+            }
+
+            MeetingNode* newMeeting = (MeetingNode*)malloc(sizeof(MeetingNode));
+            if (newMeeting == NULL) {
+                printf("Erreur lors de l'allocation memoire pour la reunion.\n");
+                freeAgendaList(agendaList);
+                fclose(file);
+                return NULL;
+            }
+
+            sscanf(line, "Meeting level %d: %02d/%02d/%04d %02d:%02d:%02d",
+                &newMeeting->meeting.level,
+                &newMeeting->meeting.day, &newMeeting->meeting.month, &newMeeting->meeting.year,
+                &newMeeting->meeting.hour, &newMeeting->meeting.minute, &newMeeting->meeting.second);
+
+            newMeeting->next = NULL;
+
+            if (currentMeeting == NULL) {
+                currentAgenda->meetings = newMeeting;
+                currentMeeting = newMeeting;
+                //printf("\n -- importAgenda : test2 passed --\n");
+            } else {
+                currentMeeting->next = newMeeting;
+                currentMeeting = newMeeting;
+                //printf("\n -- importAgenda : test3 passed --\n");
+            }
+        }
+    }
+
+    if (currentAgenda != NULL) {
+        currentAgenda->next = agendaList->head;
+        agendaList->head = currentAgenda;
+    }
+
+    fclose(file);
+    printf("Agenda importe avec succes depuis le fichier %s.\n", fileName);
+
+    Agenda* current = agendaList->head;
+    while (current != NULL) {
+        printf("Contact: %s %s\n", current->name, current->surname);
+        
+        MeetingNode* meeting = current->meetings;
+        while (meeting != NULL) {
+            printf("    Meeting level %d: %02d/%02d/%04d %02d:%02d:%02d\n",
+                    meeting->meeting.level,
+                    meeting->meeting.day, meeting->meeting.month, meeting->meeting.year,
+                    meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
+            meeting = meeting->next;
+        }
+
+        current = current->next;
+    }
+
+    return agendaList;
+}
+
+
 
 
 
@@ -833,4 +976,28 @@ Agenda* obtenirCelluleAgenda(LevelAgenda* list, int column) {
     }
 
     return NULL; // Retourne NULL si la colonne n'est pas trouvee
+}
+
+
+// Fonction pour liberer la memoire de la liste d'agenda
+void freeAgendaList(LevelAgenda* agendaList) {
+    if (agendaList == NULL) {
+        return;
+    }
+
+    Agenda* currentAgenda = agendaList->head;
+    while (currentAgenda != NULL) {
+        MeetingNode* currentMeeting = currentAgenda->meetings;
+        while (currentMeeting != NULL) {
+            MeetingNode* nextMeeting = currentMeeting->next;
+            free(currentMeeting);
+            currentMeeting = nextMeeting;
+        }
+
+        Agenda* nextAgenda = currentAgenda->next;
+        free(currentAgenda);
+        currentAgenda = nextAgenda;
+    }
+
+    free(agendaList);
 }
