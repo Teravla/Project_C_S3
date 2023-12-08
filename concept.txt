@@ -10,3 +10,9 @@ SINON :
         SI l'indice de colonne de la cellule n'est pas i, ALORS afficher CHAR_CELL * "-"
         SINON SI c'est la dernière cellule de la liste ET que l'indice de la dernière colonne est omega ALORS afficher "> NULL"
         SINON afficher "> [ {value} {indiceColonne} | @ - ]" avec value la valeur de la cellule et indiceColonne l'indice de la colonne de la cellule
+
+Voir pour la création de liste aléatoire.
+-> Liste créer aléatoirement, à les même liste au 3 premier niveaux
+
+
+// CMD : cd "c:\Users\valen\Documents\EFREI\L2\Project_C_S3\" ; if ($?) { gcc Project.c Agenda.c -o Project } ; if ($?) { .\Project }
