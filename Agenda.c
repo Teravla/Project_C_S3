@@ -359,6 +359,7 @@ void searchContactAutoComplete(LevelAgenda* list) {
 }
 
 void searchContact(LevelAgenda* list) {
+    clock_t start = clock();  // Enregistrez le temps de debut
 
     int choiceAutoComplete = 0;
 
@@ -389,7 +390,10 @@ void searchContact(LevelAgenda* list) {
                         meeting->meeting.hour, meeting->meeting.minute, meeting->meeting.second);
                     meeting = meeting->next;
                 }
-                return; // Retourner des que le contact est trouve, pas besoin de continuer la recherche
+                clock_t end = clock();  // Enregistrez le temps de fin
+                double elapsed_time = ((double)(end - start)) / CLOCKS_PER_SEC;  // Calculez le temps ecoule
+                printf("Temps de recherche : %.6f secondes.\n", elapsed_time);
+                return;  // Retournez des que le contact est trouve, pas besoin de continuer la recherche
             }
             current = current->next;
         }
@@ -774,17 +778,17 @@ void printAllLevelsAgenda(LevelAgenda* list, int numberOfCells) {
 void exportAgenda(LevelAgenda* list) {
     char fileName[100];  // Vous pouvez ajuster la taille selon vos besoins
 
-    // Demander le nom du fichier à l'utilisateur
+    // Demander le nom du fichier a l'utilisateur
     printf("Entrez le nom du fichier pour exporter l'agenda : ");
     scanf("%s", fileName);
 
     FILE* file = fopen(fileName, "w");
 
     if (file == NULL) {
-        // Si le fichier n'existe pas, tentez de le créer
+        // Si le fichier n'existe pas, tentez de le creer
         file = fopen(fileName, "w");
         if (file == NULL) {
-            printf("Erreur lors de la création du fichier.\n");
+            printf("Erreur lors de la creation du fichier.\n");
             return;
         }
     }
@@ -795,7 +799,7 @@ void exportAgenda(LevelAgenda* list) {
 
         MeetingNode* meeting = current->meetings;
 
-        // Stocker les réunions dans un tableau pour les afficher dans l'ordre inverse du niveau
+        // Stocker les reunions dans un tableau pour les afficher dans l'ordre inverse du niveau
         int meetingCount = 0;
         while (meeting != NULL) {
             meetingCount++;
@@ -804,19 +808,19 @@ void exportAgenda(LevelAgenda* list) {
 
         MeetingNode** meetingArray = malloc(meetingCount * sizeof(MeetingNode*));
         if (meetingArray == NULL) {
-            printf("Erreur lors de l'allocation mémoire pour le tableau de réunions.\n");
+            printf("Erreur lors de l'allocation memoire pour le tableau de reunions.\n");
             fclose(file);
             return;
         }
 
-        // Remplir le tableau avec les réunions
+        // Remplir le tableau avec les reunions
         meeting = current->meetings;
         for (int i = 0; i < meetingCount; i++) {
             meetingArray[i] = meeting;
             meeting = meeting->next;
         }
 
-        // Afficher les réunions dans l'ordre inverse du niveau
+        // Afficher les reunions dans l'ordre inverse du niveau
         for (int i = meetingCount - 1; i >= 0; i--) {
             fprintf(file, "Meeting level %d: %02d/%02d/%04d %02d:%02d:%02d\n",
                     meetingArray[i]->meeting.level,
@@ -824,14 +828,14 @@ void exportAgenda(LevelAgenda* list) {
                     meetingArray[i]->meeting.hour, meetingArray[i]->meeting.minute, meetingArray[i]->meeting.second);
         }
 
-        free(meetingArray);  // Libérer la mémoire allouée pour le tableau
+        free(meetingArray);  // Liberer la memoire allouee pour le tableau
 
         fprintf(file, "\n");  // Ajouter une ligne vide entre chaque contact
         current = current->next;
     }
 
     fclose(file);
-    printf("Agenda exporté avec succès vers le fichier %s.\n", fileName);
+    printf("Agenda exporte avec succes vers le fichier %s.\n", fileName);
 }
 
 

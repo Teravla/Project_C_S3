@@ -858,7 +858,7 @@ int main() {
 
         do {
 
-            printf("Bienvenue dans votre menu.\nVous pouvez : \n\n");
+            printf("\n\nBienvenue dans votre menu.\n\nVous pouvez : \n\n");
 
             printf("1. Ajouter    un contact.\n");
             printf("2. Supprimer  un contact.\n");
